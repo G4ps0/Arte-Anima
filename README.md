@@ -1,11 +1,11 @@
-# Arte&Anima - Galleria Video
+# Arte&Anima - Piattaforma Video
 
 Un sito web elegante per la gestione e visualizzazione di video YouTube, con interfaccia admin e utente.
 
 ## Caratteristiche
 
 ### Per Utenti
-- Visualizzazione galleria video in formato griglia responsive
+- Visualizzazione video in formato griglia responsive
 - Riproduzione video in modal overlay
 - Ricerca per titolo e filtri (alfabetico, data)
 - Richiesta inserimento nuovi video
@@ -16,9 +16,8 @@ Un sito web elegante per la gestione e visualizzazione di video YouTube, con int
 - Rimozione video esistenti
 - Pannello di controllo con notifiche
 
-## Credenziali Admin
-- Username: mirko
-- Password: arteanima1999
+## Accesso Admin
+L'area amministrativa è protetta da credenziali riservate. Contattare il responsabile del sito per le informazioni di accesso.
 
 ## Tecnologie Utilizzate
 - HTML5
@@ -76,7 +75,7 @@ git push -u origin main
 ### 4. Verificare il Deployment
 - Controlla che tutte le funzionalità funzionino correttamente
 - Testa il sito su diversi dispositivi e browser
-- Verifica che l'accesso admin funzioni
+- Verifica che tutte le funzionalità siano accessibili
 
 ## Note Importanti
 - I dati sono salvati in localStorage, quindi sono specifici per ogni browser/dispositivo
