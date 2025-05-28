@@ -271,6 +271,7 @@ function updateUIForAuthState() {
         elements.adminControls.classList.remove('hidden');
         elements.userView.classList.add('hidden');
         elements.adminView.classList.remove('hidden');
+        elements.userGreeting.textContent = 'Ciao, Mirko';
         
         // Render admin content
         renderVideos(elements.adminVideoGallery, state.videos);
