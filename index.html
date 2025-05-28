@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arte&Anima - Galleria Video</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Arte&Anima</h1>
+            <div class="user-controls">
+                <div id="login-section">
+                    <button id="login-btn">Accedi come Admin</button>
+                </div>
+                <div id="admin-controls" class="hidden">
+                    <span id="user-greeting">Ciao, Admin</span>
+                    <span id="pending-requests-badge" class="badge hidden">0</span>
+                    <button id="logout-btn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section id="search-section">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Cerca video...">
+                    <div class="date-filters">
+                        <div class="date-range">
+                            <label for="date-from">Da:</label>
+                            <input type="date" id="date-from">
+                        </div>
+                        <div class="date-range">
+                            <label for="date-to">A:</label>
+                            <input type="date" id="date-to">
+                        </div>
+                        <button id="apply-date-filter">Applica Filtro</button>
+                        <button id="clear-date-filter">Cancella</button>
+                    </div>
+                    <div class="filter-controls">
+                        <button id="sort-alpha-btn">A-Z</button>
+                        <button id="sort-date-btn">Più recenti</button>
+                    </div>
+                </div>
+            </section>
+
+            <div id="user-view">
+                <section id="gallery-section">
+                    <h2>Galleria Video</h2>
+                    <div id="video-gallery" class="video-grid"></div>
+                </section>
+
+                <div class="request-button-container">
+                    <button id="request-video-btn" class="request-btn">Richiedi Inserimento Video</button>
+                </div>
+            </div>
+
+            <div id="admin-view" class="hidden">
+                <div class="admin-tabs">
+                    <button class="tab-btn active" data-tab="admin-gallery">Galleria</button>
+                    <button class="tab-btn" data-tab="admin-requests">Richieste <span id="tab-requests-badge" class="badge hidden">0</span></button>
+                </div>
+
+                <div id="admin-gallery" class="admin-tab-content">
+                    <h2>Gestione Galleria</h2>
+                    <div class="add-video-form">
+                        <h3>Aggiungi Nuovo Video</h3>
+                        <form id="add-video-form">
+                            <div class="form-group">
+                                <label for="admin-video-url">URL Video YouTube*</label>
+                                <input type="text" id="admin-video-url" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="admin-video-title">Titolo Video</label>
+                                <input type="text" id="admin-video-title">
+                            </div>
+                            <button type="submit">Aggiungi Video</button>
+                        </form>
+                    </div>
+                    <div id="admin-video-gallery" class="video-grid"></div>
+                </div>
+
+                <div id="admin-requests" class="admin-tab-content hidden">
+                    <h2>Richieste in Attesa</h2>
+                    <div id="pending-requests-list"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="video-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modal-title"></h2>
+            <div id="modal-video-container"></div>
+        </div>
+    </div>
+
+    <div id="login-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Accesso Admin</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <div id="login-error" class="error-message hidden"></div>
+                <button type="submit">Accedi</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="request-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Richiedi Inserimento Video</h2>
+            <form id="request-form">
+                <div class="form-group">
+                    <label for="video-url">URL Video YouTube*</label>
+                    <input type="text" id="video-url" required>
+                </div>
+                <div class="form-group">
+                    <label for="video-title">Titolo Suggerito</label>
+                    <input type="text" id="video-title">
+                </div>
+                <div class="form-group">
+                    <label for="request-reason">Motivazione</label>
+                    <textarea id="request-reason"></textarea>
+                </div>
+                <button type="submit">Invia Richiesta</button>
+            </form>
+        </div>
+    </div>
+
+    <section id="bio-section">
+        <div class="container">
+            <div class="bio-content">
+                <h2>Chi Siamo</h2>
+                <div class="bio-card">
+                    <div class="bio-info">
+                        <h3>Mirko Sabini</h3>
+                        <p class="bio-title">Fondatore e Responsabile di Arte & Anima</p>
+                        <div class="bio-text">
+                            <p>Mirko Sabini, nato a Milano, è studente di arte terapia. Figlio di genitori emigrati dall'Abruzzo, inizia a lavorare da ragazzo col padre tipografo. Dopo una lunga gavetta nel campo delle arti grafiche, un forte esaurimento nervoso e lunghi percorsi riabilitativi, grazie a un'associazione denominata "Abili nell'apprendere ODV", costituisce una piccola attività denominata Arte & Anima di cui ne è il responsabile.</p>
+                            <p>La sua straordinaria sensibilità artistica e la profonda comprensione del potere terapeutico dell'arte lo hanno reso un punto di riferimento nel settore. Con passione e dedizione, Mirko ha trasformato le sue esperienze personali in una missione: aiutare gli altri attraverso l'espressione artistica e la condivisione di contenuti ispiratori.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <p>&copy; 2025 Arte&Anima. Tutti i diritti riservati.</p>
+                    <p>Sito a cura di Lorenzo Vecchio</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Termini e Condizioni</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Contatti</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
