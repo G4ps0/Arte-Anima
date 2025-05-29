@@ -133,11 +133,27 @@
 
             <div id="admin-view" class="hidden">
                 <div class="admin-tabs">
-                    <button class="tab-btn active" data-tab="admin-gallery">Galleria</button>
-                    <button class="tab-btn" data-tab="admin-requests">Richieste <span id="tab-requests-badge" class="badge hidden">0</span></button>
-                </div>
+    <button class="tab-btn active" data-tab="admin-gallery">Galleria</button>
+    <button class="tab-btn" data-tab="admin-requests">Richieste <span id="tab-requests-badge" class="badge hidden">0</span></button>
+</div>
+<!-- Form aggiungi nuova sezione -->
+<div id="add-section-form" class="admin-tab-content">
+    <h3>Aggiungi Nuova Sezione</h3>
+    <form id="section-form">
+        <div class="form-group">
+            <label for="section-name">Nome Sezione</label>
+            <input type="text" id="section-name" required>
+        </div>
+        <div class="form-group">
+            <label for="section-playlist">Playlist YouTube (URL)</label>
+            <input type="text" id="section-playlist" required>
+        </div>
+        <button type="submit">Aggiungi Sezione</button>
+    </form>
+    <div id="section-form-success" style="display:none;color:var(--secondary-color);margin-top:10px;">Sezione aggiunta!</div>
+</div>
 
-                <div id="admin-gallery" class="admin-tab-content">
+<div id="admin-gallery" class="admin-tab-content">
                     <h2>Gestione Piattaforma</h2>
                     <div class="add-video-form">
                         <h3>Aggiungi Nuovo Video</h3>
@@ -226,6 +242,23 @@
 
 
 
+    <!-- Chi Siamo (in fondo) -->
+    <section id="bio-section-bottom">
+        <div class="container">
+            <div class="bio-content">
+                <h2>Chi Siamo</h2>
+                <div class="bio-card">
+                    <div class="bio-info">
+                        <div class="bio-text">
+                            <p>Arte & Anima è una libera associazione di persone interessate alla diffusione della cultura e dell'arte, soprattutto attraverso il web. Sono professionisti e studiosi, o semplicemente curiosi appassionati alle tematiche che propongono e che raccontano con grande sapienza. Diversi sono gli artisti coinvolti, che trovano in questo spazio un modo per far conoscere le proprie opere. Tante iniziative sono state condotte in questi anni di attività, sempre con il coordinamento e la direzione scientifica ed artistica di Mirko Sabini, con la collaborazione di molti amici.</p>
+                            <p>L'associazione organizza incontri online aperti a chi ha voglia di mettere in gioco le proprie esperienze e di incontrare persone con cui condividerle.</p>
+                            <p>Per contatti ed informazioni: <a href="tel:+393297234281">329 72 34 281</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     <footer>
         <div class="container">
             <div class="footer-content">

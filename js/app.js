@@ -615,12 +615,91 @@ function setupEventListeners() {
     });
 }
 
+// Gestione sezioni dinamiche
+let sezioni = [
+    {
+        nome: "Musica",
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCB8hjHT54Jr_dx4oGd13VV9"
+    },
+    {
+        nome: "Arte",
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCByEoWtqaUywM7yifVNwdUS"
+    },
+    {
+        nome: "Arte-Terapia",
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCD8pum5M4kybk0LdvvZp8v3"
+    },
+    {
+        nome: "Città",
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCD-8Roi1wU3V59sdpyoKsgv"
+    },
+    {
+        nome: "Filosofia",
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCBcOCiNnCDZKiGy854_bezs"
+    }
+];
+
+function renderSezioni() {
+    const container = document.getElementById('dynamic-sections');
+    if (!container) return;
+    container.innerHTML = '';
+    sezioni.forEach(sec => {
+        const card = document.createElement('div');
+        card.className = 'bio-card';
+        card.innerHTML = `
+            <div class="bio-info">
+                <div class="bio-text">
+                    <h3>${sec.nome}</h3>
+                    <div class="video-embed">
+                        <iframe width="360" height="203" src="${sec.playlist}" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function renderSezioniAdmin() {
+    const container = document.getElementById('admin-sections-list');
+    if (!container) return;
+    container.innerHTML = '';
+    sezioni.forEach((sec, idx) => {
+        const li = document.createElement('li');
+        li.textContent = `${sec.nome} (${sec.playlist})`;
+        container.appendChild(li);
+    });
+}
+
+function setupSectionForm() {
+    const form = document.getElementById('section-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('section-name').value.trim();
+            const playlist = document.getElementById('section-playlist').value.trim();
+            if (name && playlist) {
+                sezioni.push({ nome: name, playlist });
+                renderSezioni();
+                renderSezioniAdmin();
+                document.getElementById('section-form-success').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('section-form-success').style.display = 'none';
+                }, 2000);
+                form.reset();
+            }
+        });
+    }
+}
+
 // Initialization
 function init() {
     loadData();
     setupEventListeners();
     updateUIForAuthState();
+    renderSezioni();
+    renderSezioniAdmin();
+    setupSectionForm();
 }
 
-// Start the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', init);
