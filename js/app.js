@@ -813,6 +813,7 @@ function init() {
     renderSezioniAdmin();
     setupSectionForm();
     setupAddVideoForm();
+    if (typeof setupEventListeners === 'function') setupEventListeners();
 }
 
 document.addEventListener('DOMContentLoaded', init);
