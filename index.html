@@ -26,23 +26,7 @@
 
     <main>
         <div class="container">
-            <!-- (Ricerca video e filtri rimossi) -->
-                <div class="search-container">
-                    <input type="text" id="search-input" placeholder="Cerca video...">
-                    <div class="date-filters">
-                        <div class="date-range">
-                            <label for="date-from">Da:</label>
-                            <input type="date" id="date-from">
-                        </div>
-                        <div class="date-range">
-                            <label for="date-to">A:</label>
-                            <input type="date" id="date-to">
-                        </div>
-                        <button id="apply-date-filter">Applica Filtro</button>
-                        <button id="clear-date-filter">Cancella</button>
-                    </div>
-                    <div class="filter-controls">
-                        <button id="sort-alpha-btn">A-Z</button>
+            
             <div id="user-view">
                 <div class="bio-content">
                     <div class="bio-card">
@@ -109,6 +93,13 @@
         <div class="admin-tabs">
             <button class="tab-btn active" data-tab="admin-gallery">Galleria</button>
             <button class="tab-btn" data-tab="admin-requests">Richieste <span id="tab-requests-badge" class="badge hidden">0</span></button>
+        </div>
+        <div id="admin-sections-list-container">
+            <h3>Modifica nomi sezioni/playlist</h3>
+            <form id="rename-sections-form">
+                <ul id="admin-sections-list"></ul>
+                <button type="submit">Salva nomi</button>
+            </form>
         </div>
         <div id="admin-gallery" class="admin-tab-content">
             <h2>Gestione Piattaforma</h2>

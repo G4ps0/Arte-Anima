@@ -615,11 +615,55 @@ function setupEventListeners() {
     });
 }
 
-// Gestione sezioni dinamiche
 let sezioni = [
     {
         nome: "Musica",
         playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCB8hjHT54Jr_dx4oGd13VV9",
+        videoList: []
+    },
+    {
+        nome: "Canti e Spirituals",
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCB8eRoZ5-tLuryIocDPKahA",
+        videoList: []
+    },
+    {
+        nome: "Musica e Poesia",
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCDJumFF8QzG6456ojZ_56lI",
+        videoList: []
+    },
+    {
+        nome: "Musica e Filosofia",
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCCDPFeFIbByEzzXtW9n8hTm",
+        videoList: []
+    },
+    {
+        nome: "Musica e Pittura",
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCCp3Z9ch4NIeL5sjpoSdjPf",
+        videoList: []
+    },
+    {
+        nome: "Musica e Letteratura",
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCCr1FQOp8K_3iODM8iHR7MG",
+        videoList: []
+    },
+    {
+        nome: "Musica e Teatro",
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCCDzg7Vc6H7kHIO4zaKBPEN",
+        videoList: []
+    },
+    {
+        nome: "Musica e Cinema",
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCAYc_86OPtbX-BBjgP8ETNu",
+        videoList: []
+    },
+    {
+        nome: "Musica e Psicologia",
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCBBXMBBi6V4N05oAp3bl9MD",
+        videoList: []
+    },
+    {
+        nome: "Musica e Spiritualità",
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCB3VdQ-CT-ffo_I_7EgIy43",
         videoList: []
     },
     {
@@ -679,10 +723,46 @@ function renderSezioniAdmin() {
     container.innerHTML = '';
     sezioni.forEach((sec, idx) => {
         const li = document.createElement('li');
-        li.textContent = `${sec.nome} (${sec.playlist})`;
+        li.innerHTML = `<input type="text" value="${sec.nome}" data-idx="${idx}" class="section-name-input" style="width: 80%" />`;
         container.appendChild(li);
     });
 }
+
+// Gestione submit form per rinominare sezioni
+const renameSectionsForm = document.getElementById('rename-sections-form');
+if (renameSectionsForm) {
+    renameSectionsForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const inputs = document.querySelectorAll('.section-name-input');
+        inputs.forEach(input => {
+            const idx = parseInt(input.getAttribute('data-idx'));
+            if (!isNaN(idx)) {
+                sezioni[idx].nome = input.value.trim();
+            }
+        });
+        // Salva in localStorage
+        localStorage.setItem('arteanima_sezioni', JSON.stringify(sezioni));
+        renderSezioni();
+        renderSezioniAdmin();
+        alert('Nomi sezioni aggiornati!');
+    });
+}
+
+// Carica i nomi delle sezioni da localStorage all'avvio
+const sezioniSalvate = localStorage.getItem('arteanima_sezioni');
+if (sezioniSalvate) {
+    try {
+        const sezioniParsed = JSON.parse(sezioniSalvate);
+        if (Array.isArray(sezioniParsed)) {
+            sezioni.forEach((sec, idx) => {
+                if (sezioniParsed[idx] && sezioniParsed[idx].nome) {
+                    sec.nome = sezioniParsed[idx].nome;
+                }
+            });
+        }
+    } catch (e) { /* ignore */ }
+}
+
 
 function setupSectionForm() {
     const form = document.getElementById('section-form');
