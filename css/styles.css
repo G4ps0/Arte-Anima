@@ -1,11 +1,11 @@
 /* Variables */
 :root {
-    --primary-color: #004d40;      /* Verde Petrolio Principale */
-    --secondary-color: #00796b;    /* Verde Petrolio Medio */
-    --accent-color: #009688;       /* Verde Petrolio Chiaro */
-    --accent-light: #4db6ac;       /* Verde Petrolio Molto Chiaro */
+    --primary-color: #6a1b9a;      /* Lilla Scuro Principale */
+    --secondary-color: #8e24aa;    /* Lilla Medio */
+    --accent-color: #ab47bc;       /* Lilla Chiaro */
+    --accent-light: #ce93d8;       /* Lilla Molto Chiaro */
     --error-color: #d32f2f;        /* Rosso Errore/Logout */
-    --bg-light: #e0f2f1;           /* Sfondo Chiaro Verde Petrolio */
+    --bg-light: #f3e5f5;           /* Sfondo Chiaro Lilla */
     --bg-white: #ffffff;           /* Sfondo Bianco */
     --text-color: #333333;         /* Testo Principale */
     --text-light: #ffffff;         /* Testo Chiaro */
@@ -23,7 +23,7 @@ body {
     line-height: 1.6;
     color: var(--text-color);
     background-color: var(--bg-light);
-    background-image: linear-gradient(to bottom, #e0f2f1, #ffffff);
+    background-image: linear-gradient(to bottom, #f3e5f5, #ffffff);
     background-attachment: fixed;
 }
 
