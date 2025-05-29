@@ -26,7 +26,7 @@
 
     <main>
         <div class="container">
-            <section id="search-section">
+            <!-- (Ricerca video e filtri rimossi) -->
                 <div class="search-container">
                     <input type="text" id="search-input" placeholder="Cerca video...">
                     <div class="date-filters">
@@ -54,11 +54,9 @@
                     <div id="video-gallery" class="video-grid"></div>
                 </section>
 
-                <div class="request-button-container">
-                    <button id="request-video-btn" class="request-btn">Richiedi Inserimento Video</button>
-                </div>
+                <!-- (Pulsante richiesta inserimento video rimosso dall'alto) -->
                 
-                <section id="bio-section">
+                <!-- (Chi Siamo in alto rimosso) -->
                     <div class="container">
                         <div class="bio-content">
                             <h2>Chi Siamo</h2>
@@ -259,6 +257,40 @@
             </div>
         </div>
     </section>
+    <!-- Sposta qui il form richiesta inserimento video -->
+    <div id="request-form-bottom" style="margin-bottom: 2rem;">
+        <div class="container">
+            <div class="bio-content">
+                <h2>Richiedi Inserimento Video</h2>
+                <form id="request-form">
+                    <div class="form-group">
+                        <label for="video-url">URL Video YouTube*</label>
+                        <input type="text" id="video-url" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="video-title">Titolo Suggerito</label>
+                        <input type="text" id="video-title">
+                    </div>
+                    <div class="form-group">
+                        <label for="video-section">Sezione di destinazione*</label>
+                        <select id="video-section" required>
+                            <option value="">Seleziona sezione</option>
+                            <option value="musica">Musica</option>
+                            <option value="arte">Arte</option>
+                            <option value="arte-terapia">Arte-Terapia</option>
+                            <option value="citta">Città</option>
+                            <option value="filosofia">Filosofia</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="request-reason">Motivazione</label>
+                        <textarea id="request-reason"></textarea>
+                    </div>
+                    <button type="submit">Invia Richiesta</button>
+                </form>
+            </div>
+        </div>
+    </div>
     <footer>
         <div class="container">
             <div class="footer-content">
