@@ -619,23 +619,28 @@ function setupEventListeners() {
 let sezioni = [
     {
         nome: "Musica",
-        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCB8hjHT54Jr_dx4oGd13VV9"
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCB8hjHT54Jr_dx4oGd13VV9",
+        videoList: []
     },
     {
         nome: "Arte",
-        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCByEoWtqaUywM7yifVNwdUS"
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCByEoWtqaUywM7yifVNwdUS",
+        videoList: []
     },
     {
         nome: "Arte-Terapia",
-        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCD8pum5M4kybk0LdvvZp8v3"
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCD8pum5M4kybk0LdvvZp8v3",
+        videoList: []
     },
     {
         nome: "Città",
-        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCD-8Roi1wU3V59sdpyoKsgv"
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCD-8Roi1wU3V59sdpyoKsgv",
+        videoList: []
     },
     {
         nome: "Filosofia",
-        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCBcOCiNnCDZKiGy854_bezs"
+        playlist: "https://www.youtube.com/embed/videoseries?list=PL30nV9p8EmCBcOCiNnCDZKiGy854_bezs",
+        videoList: []
     }
 ];
 
@@ -653,12 +658,20 @@ function renderSezioni() {
                     <div class="video-embed">
                         <iframe width="360" height="203" src="${sec.playlist}" frameborder="0" allowfullscreen></iframe>
                     </div>
+                    <div class="video-list">
+                        ${sec.videoList.map(v => `
+                            <div class='single-video'>
+                                <iframe width="360" height="203" src="https://www.youtube.com/embed/${getYouTubeVideoId(v.url)}" frameborder="0" allowfullscreen></iframe>
+                                <div class="video-title">${v.title ? v.title : ''}</div>
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
             </div>
         `;
         container.appendChild(card);
     });
-}
+} 
 
 function renderSezioniAdmin() {
     const container = document.getElementById('admin-sections-list');
@@ -679,7 +692,7 @@ function setupSectionForm() {
             const name = document.getElementById('section-name').value.trim();
             const playlist = document.getElementById('section-playlist').value.trim();
             if (name && playlist) {
-                sezioni.push({ nome: name, playlist });
+                sezioni.push({ nome: name, playlist, videoList: [] });
                 renderSezioni();
                 renderSezioniAdmin();
                 document.getElementById('section-form-success').style.display = 'block';
@@ -692,14 +705,34 @@ function setupSectionForm() {
     }
 }
 
+// Form aggiungi video lato admin
+function setupAddVideoForm() {
+    const form = document.getElementById('add-video-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const url = document.getElementById('admin-video-url').value.trim();
+            const title = document.getElementById('admin-video-title').value.trim();
+            const section = document.getElementById('admin-video-section').value;
+            if (url && section) {
+                const sec = sezioni.find(s => s.nome === section);
+                if (sec) {
+                    sec.videoList.push({ url, title });
+                    renderSezioni();
+                    renderSezioniAdmin();
+                    form.reset();
+                }
+            }
+        });
+    }
+} 
+
 // Initialization
 function init() {
-    loadData();
-    setupEventListeners();
-    updateUIForAuthState();
     renderSezioni();
     renderSezioniAdmin();
     setupSectionForm();
+    setupAddVideoForm();
 }
 
 document.addEventListener('DOMContentLoaded', init);
