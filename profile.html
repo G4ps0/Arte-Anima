@@ -32,7 +32,14 @@
             <div class="profile-container">
                 <div class="profile-header">
                     <div class="profile-avatar">
-                        <i class="fas fa-user-circle"></i>
+                        <div id="avatar-preview" class="avatar-preview">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <label for="avatar" class="avatar-upload-btn">
+                            <i class="fas fa-camera"></i> Cambia immagine
+                            <input type="file" id="avatar" name="avatar" accept="image/*" style="display: none;">
+                        </label>
+                        <small class="text-muted">Opzionale -  (JPG, PNG, GIF)</small>
                     </div>
                     <div class="profile-info">
                         <h1 id="profileName">Nome Artista</h1>
@@ -121,7 +128,7 @@
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/db.js"></script>
+    <script src="js/database.js"></script>
     <script src="js/profile.js"></script>
 </body>
 </html>

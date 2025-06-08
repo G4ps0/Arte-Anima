@@ -241,14 +241,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           ${profile.description ? `<p class="profile-description">${profile.description}</p>` : ''}
           ${socialLinksHTML}
         </div>
-        <div class="profile-actions">
-          <button class="btn btn-outline" onclick="event.stopPropagation(); goToProfile('${profile.id}')">
-            Vedi Profilo
-          </button>
-        </div>
       `
-      
-      profileCard.addEventListener('click', () => goToProfile(profile.id))
       elements.profilesGrid.appendChild(profileCard)
     })
   }
@@ -262,21 +255,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       <h3>Nessun profilo trovato</h3>
       <p>Prova a modificare i filtri di ricerca</p>
     `
-  }
-
-  // Vai al profilo utente
-  function goToProfile(userId) {
-    // Se l'utente sta visualizzando il proprio profilo, reindirizza alla dashboard
-    const currentUser = JSON.parse(localStorage.getItem('arteAnima_currentUser') || '{}');
-    
-    if (currentUser && currentUser.id === userId) {
-      window.location.href = 'profile.html';
-    } else {
-      // Altrimenti, mostra una preview del profilo o reindirizza a una pagina pubblica
-      console.log(`Visualizza profilo utente: ${userId}`);
-      // Per ora reindirizziamo alla pagina del profilo con l'ID
-      window.location.href = `profile.html?id=${userId}`;
-    }
   }
 
   // Avvia l'applicazione
