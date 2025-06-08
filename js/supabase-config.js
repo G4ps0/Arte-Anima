@@ -4,9 +4,9 @@ class SupabaseConfig {
     console.log("🚀 Inizializzazione Arte Anima con Supabase...")
 
     // 🔧 Configurazione Supabase
-    this.supabaseUrl = "https://auxahcufzdldjokdbrru.supabase.co"
+    this.supabaseUrl = "https://qthnrtpoxdjbyppaybuj.supabase.co"
     this.supabaseKey =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1eGFoY3VmemRsZGpva2RicnJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0MTA0MjYsImV4cCI6MjA2NDk4NjQyNn0.JIdjIk_7aLYRDfAqftyNi0gkwP52Ei18HfkTijpAYPE"
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0aG5ydHBveGRqYnlwcGF5YnVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0MTM3MDYsImV4cCI6MjA2NDk4OTcwNn0.gWXJlr3b-vq_Hss2KdavkxAA-bxCzIDLT3idumlKJx0"
 
     console.log("✅ URL Supabase:", this.supabaseUrl)
     console.log("🔑 Connessione a Supabase...")
