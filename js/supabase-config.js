@@ -1,15 +1,21 @@
 // Configurazione Supabase per Arte Anima
 class SupabaseConfig {
   constructor() {
-    // 🔧 CONFIGURA QUI LE TUE CREDENZIALI SUPABASE
-    this.supabaseUrl = "YOUR_SUPABASE_URL"
-    this.supabaseKey = "YOUR_SUPABASE_ANON_KEY"
+    console.log("🚀 Inizializzazione configurazione Supabase...");
+    
+    // 🔧 Configurazione Supabase
+    this.supabaseUrl = "https://auxahcufzdldjokdbrru.supabase.co"
+    this.supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1eGFoY3VmemRsZGpva2RicnJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0MTA0MjYsImV4cCI6MjA2NDk4NjQyNn0.JIdjIk_7aLYRDfAqftyNi0gkwP52Ei18HfkTijpAYPE"
+
+    console.log("✅ URL Supabase:", this.supabaseUrl);
+    console.log("🔑 Chiave Supabase presente:", this.supabaseKey ? 'Sì' : 'No');
 
     // Verifica se Supabase è configurato
     if (this.supabaseUrl === "YOUR_SUPABASE_URL" || this.supabaseKey === "YOUR_SUPABASE_ANON_KEY") {
       console.warn("⚠️ Supabase non configurato. Usando localStorage come fallback.")
       this.useLocalStorage = true
     } else {
+      console.log("🔌 Tentativo di connessione a Supabase...");
       this.useLocalStorage = false
       this.loadSupabase()
     }

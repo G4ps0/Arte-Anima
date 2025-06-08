@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const { password: pwd, ...userInfo } = user
       localStorage.setItem("arteAnima_currentUser", JSON.stringify(userInfo))
 
-      successEl.textContent = user.isAdmin ? "Login Admin effettuato!" : "Login effettuato con successo!"
+      successEl.textContent = user.isAdmin ? "Accesso come Amministratore effettuato" : "Accesso effettuato con successo"
 
       setTimeout(() => {
         window.location.href = "dashboard.html"
