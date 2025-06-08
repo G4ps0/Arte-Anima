@@ -88,7 +88,6 @@ class DatabaseManager {
           videos:user_id(count)
         `)
         .order('name', { ascending: true })
-
       if (error) throw error
 
       // Formatta i dati per la risposta
@@ -98,7 +97,14 @@ class DatabaseManager {
         email: user.email,
         isAdmin: user.is_admin || false,
         totalVideos: user.videos?.[0]?.count || 0,
-        createdAt: user.created_at || new Date().toISOString()
+        createdAt: user.created_at || new Date().toISOString(),
+        description: user.description || "",
+        social_links: user.social_links || {
+          youtube: "",
+          instagram: "",
+          website: "",
+          other: ""
+        }
       }))
     } catch (error) {
       console.error("Errore nel recupero degli artisti:", error)
@@ -131,6 +137,13 @@ class DatabaseManager {
           email: userData.email,
           password: userData.password,
           is_admin: false,
+          social_links: {
+            youtube: "",
+            instagram: "",
+            website: "",
+            other: ""
+          },
+          description: ""
         },
       ])
       .select()
@@ -144,6 +157,13 @@ class DatabaseManager {
       email: newUser.email,
       isAdmin: newUser.is_admin,
       createdAt: newUser.created_at,
+      description: newUser.description || "",
+      social_links: newUser.social_links || {
+        youtube: "",
+        instagram: "",
+        website: "",
+        other: ""
+      }
     }
   }
 
@@ -160,7 +180,6 @@ class DatabaseManager {
       .eq("password", password)
       .single()
 
-
     if (error || !user) {
       throw new Error("Email o password non validi")
     }
@@ -171,6 +190,13 @@ class DatabaseManager {
       email: user.email,
       isAdmin: user.is_admin,
       createdAt: user.created_at,
+      description: user.description || "",
+      social_links: user.social_links || {
+        youtube: "",
+        instagram: "",
+        website: "",
+        other: ""
+      }
     }
   }
 
@@ -311,6 +337,40 @@ class DatabaseManager {
       createdAt: user.created_at,
       totalVideos: user.videos?.[0]?.count || 0,
     }))
+  }
+
+  // Aggiorna i link social di un utente
+  async updateSocialLinks(userId, socialLinks) {
+    const supabase = await this.getClient()
+    if (!supabase) {
+      throw new Error("Supabase non inizializzato")
+    }
+
+    const { data, error } = await supabase
+      .from('users')
+      .update({ social_links: socialLinks })
+      .eq('id', userId)
+      .select()
+
+    if (error) throw error
+    return data[0]
+  }
+
+  // Aggiorna la descrizione del profilo
+  async updateProfileDescription(userId, description) {
+    const supabase = await this.getClient()
+    if (!supabase) {
+      throw new Error("Supabase non inizializzato")
+    }
+
+    const { data, error } = await supabase
+      .from('users')
+      .update({ description })
+      .eq('id', userId)
+      .select()
+
+    if (error) throw error
+    return data[0]
   }
 
   // Utility

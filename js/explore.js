@@ -88,16 +88,32 @@ document.addEventListener("DOMContentLoaded", async () => {
       const artists = await api.getPublicArtists()
       console.log('Artisti caricati:', artists)
 
-      state.allProfiles = artists.map(artist => ({
-        id: artist.id,
-        name: artist.name || 'Utente Senza Nome',
-        email: artist.email || 'Email non disponibile',
-        isAdmin: artist.isAdmin || false,
-        totalVideos: artist.totalVideos || 0,
-        createdAt: artist.createdAt || new Date().toISOString(),
-        description: generateUserDescription(artist),
-        avatarText: artist.name ? artist.name.charAt(0).toUpperCase() : 'U'
-      }))
+      state.allProfiles = artists.map(artist => {
+        // Assicurati che i social_links siano sempre un oggetto con tutte le proprietà necessarie
+        const socialLinks = artist.social_links || {
+          youtube: '',
+          instagram: '',
+          website: '',
+          other: ''
+        };
+        
+        return {
+          id: artist.id,
+          name: artist.name || 'Utente Senza Nome',
+          email: artist.email || 'Email non disponibile',
+          isAdmin: artist.isAdmin || false,
+          totalVideos: artist.totalVideos || 0,
+          createdAt: artist.createdAt || new Date().toISOString(),
+          description: artist.description || generateUserDescription(artist),
+          avatarText: artist.name ? artist.name.charAt(0).toUpperCase() : 'U',
+          social_links: {
+            youtube: socialLinks.youtube || '',
+            instagram: socialLinks.instagram || '',
+            website: socialLinks.website || '',
+            other: socialLinks.other || ''
+          }
+        };
+      });
 
       applyFilters()
     } catch (error) {
@@ -184,33 +200,55 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Visualizza i profili
   function displayProfiles() {
+    if (!elements.profilesGrid) return
+
+    elements.profilesGrid.innerHTML = ''
+
     if (state.filteredProfiles.length === 0) {
       showNoResults()
       return
     }
 
-    elements.noResults.style.display = 'none'
-    elements.profilesGrid.style.display = 'grid'
-    elements.profilesGrid.innerHTML = ''
-
     state.filteredProfiles.forEach(profile => {
       const profileCard = document.createElement('div')
       profileCard.className = 'profile-card'
-      profileCard.onclick = () => goToProfile(profile.id)
-
+      
+      // Prepara i link social se presenti
+      const socialLinks = profile.social_links || {
+        youtube: '',
+        instagram: '',
+        website: '',
+        other: ''
+      };
+      
+      // Crea gli elementi dei link social solo se presenti
+      let socialLinksHTML = '';
+      if (socialLinks.youtube || socialLinks.instagram || socialLinks.website || socialLinks.other) {
+        socialLinksHTML = `
+          <div class="profile-social-links">
+            ${socialLinks.youtube ? `<a href="${socialLinks.youtube}" target="_blank" rel="noopener noreferrer" class="social-link" title="YouTube"><i class="fab fa-youtube"></i></a>` : ''}
+            ${socialLinks.instagram ? `<a href="${socialLinks.instagram}" target="_blank" rel="noopener noreferrer" class="social-link" title="Instagram"><i class="fab fa-instagram"></i></a>` : ''}
+            ${socialLinks.website ? `<a href="${socialLinks.website}" target="_blank" rel="noopener noreferrer" class="social-link" title="Sito Web"><i class="fas fa-globe"></i></a>` : ''}
+            ${socialLinks.other ? `<a href="${socialLinks.other}" target="_blank" rel="noopener noreferrer" class="social-link" title="Altro"><i class="fas fa-link"></i></a>` : ''}
+          </div>`;
+      }
+      
       profileCard.innerHTML = `
-        <div class="profile-card-header">
-          <div class="profile-avatar">
-            ${profile.avatarText}
-          </div>
+        <div class="profile-avatar">${profile.avatarText}</div>
+        <div class="profile-info">
           <h3>${profile.name}</h3>
-          ${profile.isAdmin ? '<span class="profile-role">Amministratore</span>' : ''}
+          <p class="profile-email">${profile.email}</p>
+          ${profile.description ? `<p class="profile-description">${profile.description}</p>` : ''}
+          ${socialLinksHTML}
         </div>
-        <div class="profile-card-body">
-          <p class="profile-bio">${profile.description}</p>
+        <div class="profile-actions">
+          <button class="btn btn-outline" onclick="event.stopPropagation(); goToProfile('${profile.id}')">
+            Vedi Profilo
+          </button>
         </div>
       `
-
+      
+      profileCard.addEventListener('click', () => goToProfile(profile.id))
       elements.profilesGrid.appendChild(profileCard)
     })
   }
@@ -228,9 +266,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Vai al profilo utente
   function goToProfile(userId) {
-    // Per ora mostra un alert, ma possiamo reindirizzare a una pagina profilo
-    alert(`Visualizzazione profilo utente: ${userId}`)
-    // window.location.href = `profile.html?id=${userId}`
+    // Se l'utente sta visualizzando il proprio profilo, reindirizza alla dashboard
+    const currentUser = JSON.parse(localStorage.getItem('arteAnima_currentUser') || '{}');
+    
+    if (currentUser && currentUser.id === userId) {
+      window.location.href = 'profile.html';
+    } else {
+      // Altrimenti, mostra una preview del profilo o reindirizza a una pagina pubblica
+      console.log(`Visualizza profilo utente: ${userId}`);
+      // Per ora reindirizziamo alla pagina del profilo con l'ID
+      window.location.href = `profile.html?id=${userId}`;
+    }
   }
 
   // Avvia l'applicazione

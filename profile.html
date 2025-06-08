@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Il Mio Profilo - Arte & Anima</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Arte & Anima</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="videos.html">Video</a></li>
+                    <li><a href="explore.html">Artisti</a></li>
+                    <li><a href="#" id="loginBtn">Il Mio Profilo</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="profile-section">
+            <h2>Il Mio Profilo</h2>
+            
+            <div class="profile-container">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="profile-info">
+                        <h1 id="profileName">Nome Artista</h1>
+                        <p class="profile-email" id="profileEmail">email@esempio.com</p>
+                        <p class="member-since">Membro dal <span id="memberSince">01/01/2023</span></p>
+                        <div class="profile-actions">
+                            <button id="editProfileBtn" class="btn btn-outline">
+                                <i class="fas fa-edit"></i> Modifica Profilo
+                            </button>
+                            <button id="backToArtistsBtn" class="btn btn-outline" style="display: none;">
+                                <i class="fas fa-arrow-left"></i> Torna agli Artisti
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-tabs">
+                    <button class="tab-btn active" data-tab="profile">Profilo</button>
+                    <button class="tab-btn" data-tab="videos">I Miei Video</button>
+                </div>
+
+                <div class="tab-content">
+                    <!-- Scheda Profilo -->
+                    <div id="profile-tab" class="tab-pane active">
+                        <form id="profileForm">
+                            <div class="form-group">
+                                <label for="description">La tua presentazione</label>
+                                <textarea id="description" name="description" rows="4"></textarea>
+                            </div>
+                            
+                            <h3>Link Social</h3>
+                            <div class="form-group">
+                                <label for="youtube"><i class="fab fa-youtube"></i> YouTube</label>
+                                <input type="url" id="youtube" name="youtube">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="instagram"><i class="fab fa-instagram"></i> Instagram</label>
+                                <input type="url" id="instagram" name="instagram">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="website"><i class="fas fa-globe"></i> Sito Web</label>
+                                <input type="url" id="website" name="website">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="other"><i class="fas fa-link"></i> Altro Link</label>
+                                <input type="url" id="other" name="other">
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Salva Modifiche
+                                </button>
+                                <button type="button" id="cancelEditBtn" class="btn btn-outline">
+                                    <i class="fas fa-times"></i> Annulla
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Scheda Video -->
+                    <div id="videos-tab" class="tab-pane">
+                        <div id="myVideos">
+                            <p>Caricamento dei tuoi video...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Arte & Anima. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
+
+    <script src="js/supabase-config.js"></script>
+    <script src="js/database.js"></script>
+    <script>
+        // Inizializza l'oggetto db globale se non esiste già
+        if (!window.db) {
+            window.db = new DatabaseManager();
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/db.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>
