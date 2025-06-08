@@ -1,12 +1,22 @@
 document.addEventListener("DOMContentLoaded", async () => {
+  console.log("📊 Inizializzazione dashboard...")
+
   // Check if user is logged in
   const userJson = localStorage.getItem("arteAnima_currentUser")
   if (!userJson) {
+    console.log("❌ Utente non loggato, reindirizzamento...")
     window.location.href = "login.html"
     return
   }
 
   const currentUser = JSON.parse(userJson)
+  console.log("👤 Utente corrente:", currentUser)
+
+  // Aspetta che l'API sia pronta
+  while (!window.api) {
+    console.log("⏳ Aspettando inizializzazione API...")
+    await new Promise((resolve) => setTimeout(resolve, 100))
+  }
 
   // Menu toggle for mobile
   const menuToggle = document.querySelector(".menu-toggle")
@@ -44,13 +54,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       loadingEl.style.display = "block"
       videosContainer.style.display = "none"
 
-      const videos = await api.getUserVideos(currentUser.id)
+      console.log("📹 Caricamento video per utente:", currentUser.id)
+      const videos = await window.api.getUserVideos(currentUser.id)
+      console.log("✅ Video caricati:", videos.length)
+
       displayUserVideos(videos)
 
       // Update stats
       document.getElementById("total-videos").textContent = videos.length
     } catch (error) {
-      console.error("Errore caricamento video:", error)
+      console.error("❌ Errore caricamento video:", error)
+      alert("Errore nel caricamento dei video: " + error.message)
     } finally {
       document.getElementById("loading").style.display = "none"
       document.getElementById("videos-container").style.display = "grid"
@@ -74,7 +88,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     videos.forEach((video) => {
-      const videoId = api.extractYouTubeId(video.url)
+      const videoId = window.api.extractYouTubeId(video.url)
       if (!videoId) return
 
       const videoCard = document.createElement("div")
@@ -130,18 +144,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("add-video-form").addEventListener("submit", async (e) => {
     e.preventDefault()
 
-    const title = document.getElementById("video-title").value
-    const url = document.getElementById("video-url").value
-    const description = document.getElementById("video-description").value
+    const title = document.getElementById("video-title").value.trim()
+    const url = document.getElementById("video-url").value.trim()
+    const description = document.getElementById("video-description").value.trim()
+
+    if (!title || !url) {
+      alert("Titolo e URL sono obbligatori")
+      return
+    }
 
     try {
-      await api.addVideo(currentUser.id, { title, url, description })
+      console.log("➕ Aggiunta video:", { title, url })
+      await window.api.addVideo(currentUser.id, { title, url, description })
+      console.log("✅ Video aggiunto con successo")
 
       document.getElementById("add-video-form").reset()
       addVideoModal.style.display = "none"
 
       await loadUserVideos()
     } catch (error) {
+      console.error("❌ Errore aggiunta video:", error)
       alert("Errore: " + error.message)
     }
   })
@@ -151,64 +173,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!confirm("Sei sicuro di voler eliminare questo video?")) return
 
     try {
-      await api.deleteVideo(videoId, currentUser.id)
+      console.log("🗑️ Eliminazione video:", videoId)
+      await window.api.deleteVideo(videoId, currentUser.id)
+      console.log("✅ Video eliminato")
       await loadUserVideos()
     } catch (error) {
+      console.error("❌ Errore eliminazione video:", error)
       alert("Errore: " + error.message)
     }
   }
 
   // Initialize
   updateUserInfo()
-  // Mock API (replace with your actual API implementation)
-  const api = {
-    getUserVideos: async (userId) => {
-      // Replace with actual API call
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          const mockVideos = [
-            {
-              id: "1",
-              userId: userId,
-              title: "Video 1",
-              url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-              description: "Description 1",
-              createdAt: new Date(),
-            },
-            {
-              id: "2",
-              userId: userId,
-              title: "Video 2",
-              url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-              description: "Description 2",
-              createdAt: new Date(),
-            },
-          ]
-          resolve(mockVideos)
-        }, 500)
-      })
-    },
-    addVideo: async (userId, video) => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          console.log("Video added", userId, video)
-          resolve()
-        }, 500)
-      })
-    },
-    deleteVideo: async (videoId, userId) => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          console.log("Video deleted", videoId, userId)
-          resolve()
-        }, 500)
-      })
-    },
-    extractYouTubeId: (url) => {
-      const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
-      const match = url.match(regExp)
-      return match && match[2].length === 11 ? match[2] : null
-    },
-  }
   await loadUserVideos()
 })

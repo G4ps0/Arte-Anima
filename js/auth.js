@@ -1,4 +1,15 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  // Aspetta che l'API sia inizializzata
+  console.log("🔐 Inizializzazione pagina di autenticazione...")
+
+  // Aspetta che l'API sia pronta
+  while (!window.api) {
+    console.log("⏳ Aspettando inizializzazione API...")
+    await new Promise((resolve) => setTimeout(resolve, 100))
+  }
+
+  console.log("✅ API pronta per l'autenticazione")
+
   // Tab switching
   const tabBtns = document.querySelectorAll(".tab-btn")
   const tabContents = document.querySelectorAll(".tab-content")
@@ -23,28 +34,41 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("login-form").addEventListener("submit", async (e) => {
     e.preventDefault()
 
-    const email = document.getElementById("login-email").value
+    const email = document.getElementById("login-email").value.trim()
     const password = document.getElementById("login-password").value
     const errorEl = document.getElementById("login-error")
     const successEl = document.getElementById("login-success")
+    const submitBtn = e.target.querySelector('button[type="submit"]')
 
+    // Reset messaggi
     errorEl.textContent = ""
     successEl.textContent = ""
 
+    // Disabilita il bottone durante il login
+    submitBtn.disabled = true
+    submitBtn.textContent = "Accesso in corso..."
+
     try {
-      const user = await api.loginUser(email, password)
+      console.log("🔑 Tentativo di login per:", email)
+      const user = await window.api.loginUser(email, password)
+      console.log("✅ Login riuscito:", user)
 
       // Salva utente corrente (senza password)
       const { password: pwd, ...userInfo } = user
       localStorage.setItem("arteAnima_currentUser", JSON.stringify(userInfo))
 
-      successEl.textContent = user.isAdmin ? "Accesso come Amministratore effettuato" : "Accesso effettuato con successo"
+      successEl.textContent = user.isAdmin ? "Login Admin effettuato!" : "Login effettuato con successo!"
 
       setTimeout(() => {
         window.location.href = "dashboard.html"
       }, 1000)
     } catch (error) {
+      console.error("❌ Errore login:", error)
       errorEl.textContent = error.message
+
+      // Riabilita il bottone
+      submitBtn.disabled = false
+      submitBtn.textContent = "Accedi"
     }
   })
 
@@ -52,24 +76,43 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("register-form").addEventListener("submit", async (e) => {
     e.preventDefault()
 
-    const name = document.getElementById("register-name").value
-    const email = document.getElementById("register-email").value
+    const name = document.getElementById("register-name").value.trim()
+    const email = document.getElementById("register-email").value.trim()
     const password = document.getElementById("register-password").value
     const errorEl = document.getElementById("register-error")
     const successEl = document.getElementById("register-success")
+    const submitBtn = e.target.querySelector('button[type="submit"]')
 
+    // Reset messaggi
     errorEl.textContent = ""
     successEl.textContent = ""
+
+    // Validazioni
+    if (!name) {
+      errorEl.textContent = "Il nome è obbligatorio"
+      return
+    }
+
+    if (!email) {
+      errorEl.textContent = "L'email è obbligatoria"
+      return
+    }
 
     if (password.length < 6) {
       errorEl.textContent = "La password deve essere di almeno 6 caratteri"
       return
     }
 
-    try {
-      const user = await api.registerUser({ name, email, password })
+    // Disabilita il bottone durante la registrazione
+    submitBtn.disabled = true
+    submitBtn.textContent = "Registrazione in corso..."
 
-      // Auto login
+    try {
+      console.log("📝 Tentativo di registrazione per:", email)
+      const user = await window.api.registerUser({ name, email, password })
+      console.log("✅ Registrazione riuscita:", user)
+
+      // Auto login dopo registrazione
       const { password: pwd, ...userInfo } = user
       localStorage.setItem("arteAnima_currentUser", JSON.stringify(userInfo))
 
@@ -79,42 +122,19 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = "dashboard.html"
       }, 1000)
     } catch (error) {
+      console.error("❌ Errore registrazione:", error)
       errorEl.textContent = error.message
+
+      // Riabilita il bottone
+      submitBtn.disabled = false
+      submitBtn.textContent = "Registrati"
     }
   })
 
   // Check if already logged in
   const currentUser = localStorage.getItem("arteAnima_currentUser")
   if (currentUser) {
+    console.log("👤 Utente già loggato, reindirizzamento...")
     window.location.href = "dashboard.html"
   }
 })
-
-const api = {
-  loginUser: async (email, password) => {
-    // Mock API call
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (email === "admin@example.com" && password === "password") {
-          resolve({ name: "Admin User", email: "admin@example.com", isAdmin: true })
-        } else if (email === "user@example.com" && password === "password") {
-          resolve({ name: "Test User", email: "user@example.com", isAdmin: false })
-        } else {
-          reject(new Error("Credenziali non valide"))
-        }
-      }, 500)
-    })
-  },
-  registerUser: async (userData) => {
-    // Mock API call
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (userData.email && userData.password) {
-          resolve({ name: userData.name, email: userData.email, isAdmin: false })
-        } else {
-          reject(new Error("Dati di registrazione non validi"))
-        }
-      }, 500)
-    })
-  },
-}
