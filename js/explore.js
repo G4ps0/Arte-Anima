@@ -1,239 +1,249 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  let allProfiles = []
-  let filteredProfiles = []
-  let currentFilter = "all"
-  let currentSort = "name"
+  // Stato dell'applicazione
+  const state = {
+    allProfiles: [],
+    filteredProfiles: [],
+    currentFilter: 'all',
+    currentSort: 'name',
+    searchTerm: ''
+  };
 
-  // Elements
-  const loadingSpinner = document.getElementById("loading")
-  const profilesGrid = document.getElementById("profiles-grid")
-  const noResults = document.getElementById("no-results")
-  const searchInput = document.getElementById("search-input")
-  const searchBtn = document.getElementById("search-btn")
-  const filterBtns = document.querySelectorAll(".filter-btn")
-  const sortSelect = document.getElementById("sort-select")
-  const authBtn = document.getElementById("auth-btn")
-
-  // Check if user is logged in
-  const currentUser = localStorage.getItem("arteAnima_currentUser")
-  if (currentUser && authBtn) {
-    const user = JSON.parse(currentUser)
-    authBtn.textContent = "Dashboard"
-    authBtn.href = "dashboard.html"
+  // Elementi DOM
+  const elements = {
+    loadingSpinner: document.getElementById('loading'),
+    profilesGrid: document.getElementById('profiles-grid'),
+    noResults: document.getElementById('no-results'),
+    searchInput: document.getElementById('search-input'),
+    searchBtn: document.getElementById('search-btn'),
+    filterBtns: document.querySelectorAll('.filter-btn'),
+    sortSelect: document.getElementById('sort-select'),
+    authBtn: document.getElementById('auth-btn'),
+    menuToggle: document.querySelector('.menu-toggle'),
+    navMenu: document.querySelector('nav ul')
   }
 
-  // Menu toggle for mobile
-  const menuToggle = document.querySelector(".menu-toggle")
-  const navMenu = document.querySelector("nav ul")
+  // Inizializzazione
+  function init() {
+    checkAuthStatus()
+    setupEventListeners()
+    loadProfiles()
+  }
 
-  if (menuToggle) {
-    menuToggle.addEventListener("click", () => {
-      navMenu.classList.toggle("show")
+  // Controlla lo stato di autenticazione
+  function checkAuthStatus() {
+    const currentUser = localStorage.getItem('arteAnima_currentUser')
+    if (currentUser && elements.authBtn) {
+      elements.authBtn.textContent = 'Dashboard'
+      elements.authBtn.href = 'dashboard.html'
+    }
+  }
+
+  // Imposta i gestori degli eventi
+  function setupEventListeners() {
+    // Menu mobile
+    if (elements.menuToggle) {
+      elements.menuToggle.addEventListener('click', () => {
+        elements.navMenu.classList.toggle('show')
+      })
+    }
+
+    // Filtri
+    if (elements.filterBtns) {
+      elements.filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          elements.filterBtns.forEach(b => b.classList.remove('active'))
+          btn.classList.add('active')
+          state.currentFilter = btn.dataset.filter
+          applyFilters()
+        })
+      })
+    }
+
+    // Ricerca
+    elements.searchInput.addEventListener('input', (e) => {
+      state.searchTerm = e.target.value.toLowerCase()
+      applyFilters()
     })
+
+    elements.searchBtn.addEventListener('click', () => {
+      state.searchTerm = elements.searchInput.value.toLowerCase()
+      applyFilters()
+    })
+
+    // Ordinamento
+    if (elements.sortSelect) {
+      elements.sortSelect.addEventListener('change', (e) => {
+        state.currentSort = e.target.value
+        applyFilters()
+      })
+    }
   }
 
-  // Load user profiles
+
+  // Carica i profili
   async function loadProfiles() {
     try {
-      loadingSpinner.style.display = "block"
-      profilesGrid.style.display = "none"
-      noResults.style.display = "none"
-
+      showLoading(true)
+      
       const artists = await api.getPublicArtists()
+      console.log('Artisti caricati:', artists)
 
-      allProfiles = artists.map((artist) => ({
+      state.allProfiles = artists.map(artist => ({
         id: artist.id,
-        name: artist.name,
-        email: artist.email || "Email non disponibile",
+        name: artist.name || 'Utente Senza Nome',
+        email: artist.email || 'Email non disponibile',
         isAdmin: artist.isAdmin || false,
-        totalVideos: artist.totalVideos,
-        totalSections: 0,
-        sections: [],
+        totalVideos: artist.totalVideos || 0,
         createdAt: artist.createdAt || new Date().toISOString(),
         description: generateUserDescription(artist),
+        avatarText: artist.name ? artist.name.charAt(0).toUpperCase() : 'U'
       }))
 
-      filteredProfiles = [...allProfiles]
-      displayProfiles()
+      applyFilters()
     } catch (error) {
-      console.error("Errore nel caricamento dei profili:", error)
-      loadingSpinner.style.display = "none"
-      showEmptyState()
+      console.error('Errore nel caricamento dei profili:', error)
+      showError('Impossibile caricare i profili')
+    } finally {
+      showLoading(false)
     }
   }
 
-  // Generate user description
+  // Genera la descrizione dell'utente
   function generateUserDescription(artist) {
     if (artist.isAdmin) {
-      return "Amministratore della piattaforma. Creatore di contenuti artistici e culturali."
+      return 'Amministratore della piattaforma. Creatore di contenuti artistici e culturali.'
     }
-
     if (artist.totalVideos === 0) {
-      return "Nuovo membro della community Arte Anima."
+      return 'Nuovo membro della community Arte Anima.'
     }
-
     return `Artista con ${artist.totalVideos} video condivisi nella community.`
   }
 
-  // Display profiles
-  function displayProfiles() {
-    loadingSpinner.style.display = "none"
+  // Mostra/nascondi il caricamento
+  function showLoading(show) {
+    elements.loadingSpinner.style.display = show ? 'flex' : 'none'
+  }
 
-    if (filteredProfiles.length === 0) {
-      profilesGrid.style.display = "none"
-      noResults.style.display = "block"
+  // Mostra un messaggio di errore
+  function showError(message) {
+    elements.noResults.innerHTML = `
+      <i class="fas fa-exclamation-circle"></i>
+      <h3>Si è verificato un errore</h3>
+      <p>${message}</p>
+    `
+    elements.noResults.style.display = 'flex'
+  }
+
+  // Applica filtri e ordinamento
+  function applyFilters() {
+    let filtered = [...state.allProfiles]
+
+    // Filtro per ricerca
+    if (state.searchTerm) {
+      filtered = filtered.filter(profile => 
+        profile.name.toLowerCase().includes(state.searchTerm) ||
+        profile.email.toLowerCase().includes(state.searchTerm) ||
+        profile.description.toLowerCase().includes(state.searchTerm)
+      )
+    }
+
+    // Filtro per categoria
+    switch (state.currentFilter) {
+      case 'admin':
+        filtered = filtered.filter(profile => profile.isAdmin)
+        break
+      case 'artists':
+        filtered = filtered.filter(profile => !profile.isAdmin && profile.totalVideos > 0)
+        break
+      case 'recent':
+        // Gli ultimi 7 giorni
+        const oneWeekAgo = new Date()
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+        filtered = filtered.filter(profile => new Date(profile.createdAt) > oneWeekAgo)
+        break
+      // 'all' non richiede filtri aggiuntivi
+    }
+
+    // Ordinamento
+    filtered.sort((a, b) => {
+      switch (state.currentSort) {
+        case 'name':
+          return a.name.localeCompare(b.name)
+        case 'videos':
+          return b.totalVideos - a.totalVideos
+        case 'recent':
+          return new Date(b.createdAt) - new Date(a.createdAt)
+        default:
+          return 0
+      }
+    })
+
+    state.filteredProfiles = filtered
+    displayProfiles()
+  }
+
+  // Visualizza i profili
+  function displayProfiles() {
+    if (state.filteredProfiles.length === 0) {
+      showNoResults()
       return
     }
 
-    noResults.style.display = "none"
-    profilesGrid.style.display = "grid"
-    profilesGrid.innerHTML = ""
+    elements.noResults.style.display = 'none'
+    elements.profilesGrid.style.display = 'grid'
+    elements.profilesGrid.innerHTML = ''
 
-    filteredProfiles.forEach((profile) => {
-      const profileCard = document.createElement("div")
-      profileCard.className = "profile-card"
+    state.filteredProfiles.forEach(profile => {
+      const profileCard = document.createElement('div')
+      profileCard.className = 'profile-card'
       profileCard.onclick = () => goToProfile(profile.id)
 
       profileCard.innerHTML = `
         <div class="profile-card-header">
           <div class="profile-avatar">
-            <i class="fas fa-user"></i>
+            ${profile.avatarText}
           </div>
-          <div class="profile-name">${profile.name}</div>
-          <div class="profile-email">${profile.email}</div>
-          <div class="profile-badges">
-            ${profile.isAdmin ? '<div class="admin-badge"><i class="fas fa-crown"></i> Admin</div>' : ""}
-          </div>
-          <div class="profile-stats">
-            <div class="stat">
-              <span class="stat-number">${profile.totalVideos || 0}</span>
-              <span class="stat-label">Video</span>
-            </div>
-            <div class="stat">
-              <span class="stat-number">${Math.floor(Math.random() * 500) + 100}</span>
-              <span class="stat-label">Views</span>
-            </div>
-          </div>
+          <h3>${profile.name}</h3>
+          ${profile.isAdmin ? '<span class="profile-role">Amministratore</span>' : ''}
         </div>
         <div class="profile-card-body">
-          <div class="profile-description">
-            ${profile.description}
-          </div>
-        </div>
-        <div class="profile-card-footer">
-          <div class="member-since">
-            Membro dal ${new Date(profile.createdAt).toLocaleDateString("it-IT")}
-          </div>
-          <button class="view-profile-btn">
-            Vedi Profilo <i class="fas fa-arrow-right"></i>
-          </button>
+          <p class="profile-bio">${profile.description}</p>
         </div>
       `
 
-      profilesGrid.appendChild(profileCard)
+      elements.profilesGrid.appendChild(profileCard)
     })
   }
 
-  // Show empty state
-  function showEmptyState() {
-    profilesGrid.innerHTML = `
-      <div class="empty-state" style="grid-column: 1 / -1;">
-        <i class="fas fa-users"></i>
-        <h3>Nessun profilo disponibile</h3>
-        <p>Sii il primo a creare contenuti sulla piattaforma!</p>
-        <a href="login.html" class="btn">Registrati Ora</a>
-      </div>
+  // Mostra lo stato "nessun risultato"
+  function showNoResults() {
+    elements.profilesGrid.style.display = 'none'
+    elements.noResults.style.display = 'flex'
+    elements.noResults.innerHTML = `
+      <i class="fas fa-users-slash"></i>
+      <h3>Nessun profilo trovato</h3>
+      <p>Prova a modificare i filtri di ricerca</p>
     `
-    profilesGrid.style.display = "grid"
   }
 
-  // Apply filters and sorting
-  function applyFiltersAndSort() {
-    let filtered = [...allProfiles]
-
-    // Apply search filter
-    const searchTerm = searchInput.value.toLowerCase().trim()
-    if (searchTerm) {
-      filtered = filtered.filter((profile) => {
-        return (
-          profile.name.toLowerCase().includes(searchTerm) ||
-          profile.email.toLowerCase().includes(searchTerm) ||
-          profile.description.toLowerCase().includes(searchTerm)
-        )
-      })
-    }
-
-    // Apply category filter
-    switch (currentFilter) {
-      case "admin":
-        filtered = filtered.filter((profile) => profile.isAdmin)
-        break
-      case "artists":
-        filtered = filtered.filter((profile) => !profile.isAdmin && profile.totalVideos > 0)
-        break
-      case "recent":
-        filtered = filtered.filter((profile) => {
-          const profileDate = new Date(profile.createdAt)
-          const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-          return profileDate > thirtyDaysAgo
-        })
-        break
-      default:
-        break
-    }
-
-    // Apply sorting
-    switch (currentSort) {
-      case "videos":
-        filtered.sort((a, b) => (b.totalVideos || 0) - (a.totalVideos || 0))
-        break
-      case "recent":
-        filtered.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
-        break
-      case "name":
-      default:
-        filtered.sort((a, b) => a.name.localeCompare(b.name))
-        break
-    }
-
-    // Put admins first if not specifically filtering
-    if (currentFilter === "all") {
-      filtered.sort((a, b) => {
-        if (a.isAdmin && !b.isAdmin) return -1
-        if (!a.isAdmin && b.isAdmin) return 1
-        return 0
-      })
-    }
-
-    filteredProfiles = filtered
-    displayProfiles()
+  // Vai al profilo utente
+  function goToProfile(userId) {
+    // Per ora mostra un alert, ma possiamo reindirizzare a una pagina profilo
+    alert(`Visualizzazione profilo utente: ${userId}`)
+    // window.location.href = `profile.html?id=${userId}`
   }
 
-  // Event listeners
-  searchInput.addEventListener("input", applyFiltersAndSort)
-  searchBtn.addEventListener("click", applyFiltersAndSort)
+  // Avvia l'applicazione
+  init();
 
-  filterBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      filterBtns.forEach((b) => b.classList.remove("active"))
-      btn.classList.add("active")
-      currentFilter = btn.getAttribute("data-filter")
-      applyFiltersAndSort()
-    })
-  })
-
-  if (sortSelect) {
-    sortSelect.addEventListener("change", (e) => {
-      currentSort = e.target.value
-      applyFiltersAndSort()
-    })
+  // Inizializza l'ordinamento
+  if (elements.sortSelect) {
+    elements.sortSelect.addEventListener("change", (e) => {
+      state.currentSort = e.target.value;
+      applyFilters();
+    });
   }
 
-  // Initialize
-  await loadProfiles()
-})
-
-// Go to user profile (placeholder)
-function goToProfile(userId) {
-  alert(`Profilo utente ${userId} - Funzionalità in sviluppo`)
-}
+  // Carica i profili
+  await loadProfiles();
+});

@@ -7,38 +7,55 @@ class DatabaseManager {
   // Inizializza il database
   async initialize() {
     console.log("🗄️ Inizializzazione database...")
-    await this.initializeSupabase()
+    try {
+      // Attendi che Supabase sia inizializzato
+      this.supabase = await this.config.waitForInitialization()
+      if (!this.supabase) {
+        throw new Error("Impossibile inizializzare Supabase")
+      }
+      await this.initializeSupabase()
+    } catch (error) {
+      console.error("❌ Errore inizializzazione database:", error)
+      throw error
+    }
   }
 
   async initializeSupabase() {
     try {
-      const supabase = this.config.getClient()
-      if (!supabase) {
+      if (!this.supabase) {
         throw new Error("Supabase non inizializzato")
       }
 
       // Verifica se l'admin esiste già
-      const { data: existingAdmin } = await supabase
+      const { data: existingAdmin, error: fetchError } = await this.supabase
         .from("users")
         .select("*")
         .eq("email", "arteanima1999@gmail.com")
         .single()
 
+      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = no rows returned
+        throw fetchError
+      }
+
       if (!existingAdmin) {
         console.log("👤 Creazione admin di default...")
         // Crea l'admin
-        const { error } = await supabase.from("users").insert([
-          {
-            name: "Arte Anima Admin",
-            email: "arteanima1999@gmail.com",
-            password: "admin123",
-            is_admin: true,
-          },
-        ])
+        const { error: insertError } = await this.supabase
+          .from("users")
+          .insert([
+            {
+              name: "Arte Anima Admin",
+              email: "arteanima1999@gmail.com",
+              password: "loremirko123",
+              is_admin: true,
+            },
+          ])
 
-        if (!error) {
-          console.log("✅ Admin creato con successo")
+        if (insertError) {
+          console.error("❌ Errore creazione admin:", insertError)
+          throw insertError
         }
+        console.log("✅ Admin creato con successo")
       } else {
         console.log("✅ Admin già presente nel database")
       }
@@ -48,11 +65,59 @@ class DatabaseManager {
     }
   }
 
+  // Restituisce il client Supabase
+  async getClient() {
+    if (!this.supabase) {
+      this.supabase = await this.config.waitForInitialization()
+    }
+    return this.supabase
+  }
+
+  // GESTIONE UTENTI
+  async getPublicArtists() {
+    try {
+      const supabase = await this.getClient()
+      if (!supabase) {
+        throw new Error("Supabase non inizializzato")
+      }
+
+      const { data: users, error } = await supabase
+        .from('users')
+        .select(`
+          *,
+          videos:user_id(count)
+        `)
+        .order('name', { ascending: true })
+
+      if (error) throw error
+
+      // Formatta i dati per la risposta
+      return users.map(user => ({
+        id: user.id,
+        name: user.name || 'Utente Senza Nome',
+        email: user.email,
+        isAdmin: user.is_admin || false,
+        totalVideos: user.videos?.[0]?.count || 0,
+        createdAt: user.created_at || new Date().toISOString()
+      }))
+    } catch (error) {
+      console.error("Errore nel recupero degli artisti:", error)
+      throw error
+    }
+  }
+
   // GESTIONE UTENTI
   async registerUser(userData) {
-    const supabase = this.config.getClient()
+    const supabase = await this.getClient()
+    if (!supabase) {
+      throw new Error("Supabase non inizializzato")
+    }
 
-    const { data: existingUser } = await supabase.from("users").select("*").eq("email", userData.email).single()
+    const { data: existingUser } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", userData.email)
+      .single()
 
     if (existingUser) {
       throw new Error("Email già registrata")
@@ -83,7 +148,10 @@ class DatabaseManager {
   }
 
   async loginUser(email, password) {
-    const supabase = this.config.getClient()
+    const supabase = await this.getClient()
+    if (!supabase) {
+      throw new Error("Supabase non inizializzato")
+    }
 
     const { data: user, error } = await supabase
       .from("users")
@@ -91,6 +159,7 @@ class DatabaseManager {
       .eq("email", email)
       .eq("password", password)
       .single()
+
 
     if (error || !user) {
       throw new Error("Email o password non validi")
@@ -107,7 +176,10 @@ class DatabaseManager {
 
   // GESTIONE VIDEO
   async addVideo(userId, videoData) {
-    const supabase = this.config.getClient()
+    const supabase = await this.getClient()
+    if (!supabase) {
+      throw new Error("Supabase non inizializzato")
+    }
 
     const videoId = this.extractYouTubeId(videoData.url)
     if (!videoId) {
@@ -140,7 +212,10 @@ class DatabaseManager {
   }
 
   async getUserVideos(userId) {
-    const supabase = this.config.getClient()
+    const supabase = await this.getClient()
+    if (!supabase) {
+      throw new Error("Supabase non inizializzato")
+    }
 
     const { data: videos, error } = await supabase
       .from("videos")
@@ -156,12 +231,15 @@ class DatabaseManager {
       title: video.title,
       url: video.url,
       description: video.description,
-      createdAt: video.created_at,
+      createdAt: video.created_at
     }))
   }
 
   async getAllVideos() {
-    const supabase = this.config.getClient()
+    const supabase = await this.getClient()
+    if (!supabase) {
+      throw new Error("Supabase non inizializzato")
+    }
 
     const { data: videos, error } = await supabase
       .from("videos")
@@ -189,7 +267,10 @@ class DatabaseManager {
   }
 
   async deleteVideo(videoId, userId) {
-    const supabase = this.config.getClient()
+    const supabase = await this.getClient()
+    if (!supabase) {
+      throw new Error("Supabase non inizializzato")
+    }
 
     const { data: user } = await supabase.from("users").select("is_admin").eq("id", userId).single()
 
@@ -207,12 +288,18 @@ class DatabaseManager {
   }
 
   async getAllUsers() {
-    const supabase = this.config.getClient()
+    const supabase = await this.getClient()
+    if (!supabase) {
+      throw new Error("Supabase non inizializzato")
+    }
 
-    const { data: users, error } = await supabase.from("users").select(`
-      *,
-      videos (count)
-    `)
+    const { data: users, error } = await supabase
+      .from("users")
+      .select(`
+        *,
+        videos (count)
+      `)
+      .order("name", { ascending: true })
 
     if (error) throw error
 

@@ -13,7 +13,25 @@ class SupabaseConfig {
 
     // SOLO SUPABASE - nessun fallback localStorage
     this.useLocalStorage = false
-    this.loadSupabase()
+    this.initialized = false
+    this.initializationPromise = this.initialize()
+  }
+
+  async initialize() {
+    try {
+      await this.loadSupabase()
+      this.initialized = true
+      return this.supabase
+    } catch (error) {
+      console.error("❌ Errore inizializzazione Supabase:", error)
+      throw error
+    }
+  }
+
+  // Metodo per attendere l'inizializzazione
+  async waitForInitialization() {
+    if (this.initialized) return this.supabase
+    return this.initializationPromise
   }
 
   async loadSupabase() {
