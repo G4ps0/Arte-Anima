@@ -41,17 +41,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             if (!currentUser) return;
             
+            // Carica i dati aggiornati dell'utente dal database
+            const { data: userData, error } = await window.db.supabase
+                .from('users')
+                .select('*')
+                .eq('id', currentUser.id)
+                .single();
+                
+            if (error) throw error;
+            
+            // Aggiorna i dati dell'utente corrente
+            currentUser = { ...currentUser, ...userData };
+            localStorage.setItem('user', JSON.stringify(currentUser));
+            
             // Aggiorna le informazioni del profilo
             if (profileName) profileName.textContent = currentUser.name || 'Utente';
             if (profileEmail) profileEmail.textContent = currentUser.email || '';
             
-            // Formatta e mostra la data di iscrizione
-            if (memberSince && currentUser.created_at) {
-                const joinDate = new Date(currentUser.created_at);
-                memberSince.textContent = `Membro da ${joinDate.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })}`;
-            }
-            
-            // Carica la descrizione e i link sociali
+            // Aggiorna la descrizione
             if (description) description.value = currentUser.description || '';
             
             // Inizializza social_links se non esiste
@@ -62,19 +69,26 @@ document.addEventListener('DOMContentLoaded', async () => {
                 other: ''
             };
             
-            // Imposta i valori dei campi social
-            const socialLinks = currentUser.social_links;
-            if (youtubeInput) youtubeInput.value = socialLinks.youtube || '';
-            if (instagramInput) instagramInput.value = socialLinks.instagram || '';
-            if (websiteInput) websiteInput.value = socialLinks.website || '';
-            if (otherInput) otherInput.value = socialLinks.other || '';
+            // Aggiorna i campi del form con i dati dell'utente
+            if (description) description.value = currentUser.description || '';
+            if (youtubeInput) youtubeInput.value = currentUser.social_links.youtube || '';
+            if (instagramInput) instagramInput.value = currentUser.social_links.instagram || '';
+            if (websiteInput) websiteInput.value = currentUser.social_links.website || '';
+            if (otherInput) otherInput.value = currentUser.social_links.other || '';
             
-            // Imposta l'anteprima dell'avatar se presente
+            // Aggiorna l'anteprima dell'avatar
             if (currentUser.avatar_url && avatarPreview) {
-                avatarPreview.style.backgroundImage = `url('${currentUser.avatar_url}')`;
-                avatarPreview.textContent = '';
+                avatarPreview.innerHTML = `<img src="${currentUser.avatar_url}" alt="${currentUser.name}'s avatar" style="width: 100%; height: 100%; object-fit: cover;">`;
             } else if (avatarPreview) {
-                avatarPreview.textContent = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U';
+                // Mostra l'iniziale del nome se non c'è un avatar
+                const initial = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U';
+                avatarPreview.textContent = initial;
+            }
+            
+            // Formatta e mostra la data di iscrizione
+            if (memberSince && currentUser.created_at) {
+                const joinDate = new Date(currentUser.created_at);
+                memberSince.textContent = `Membro da ${joinDate.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })}`;
             }
             
         } catch (error) {

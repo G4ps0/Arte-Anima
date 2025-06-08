@@ -233,11 +233,23 @@ document.addEventListener("DOMContentLoaded", async () => {
           </div>`;
       }
       
+      // Prepara l'avatar
+      let avatarHTML = '';
+      if (profile.avatar_url) {
+        avatarHTML = `<img src="${profile.avatar_url}" alt="${profile.name}'s avatar" class="profile-avatar-img">`;
+      } else {
+        // Se non c'è un avatar, mostra l'iniziale del nome
+        const initial = profile.name ? profile.name.charAt(0).toUpperCase() : 'U';
+        avatarHTML = `<div class="profile-avatar-initial">${initial}</div>`;
+      }
+      
       profileCard.innerHTML = `
-        <div class="profile-avatar">${profile.avatarText}</div>
+        <div class="profile-avatar">
+          ${avatarHTML}
+        </div>
         <div class="profile-info">
-          <h3>${profile.name}</h3>
-          <p class="profile-email">${profile.email}</p>
+          <h3>${profile.name || 'Utente'}</h3>
+          <p class="profile-email">${profile.email || ''}</p>
           ${profile.description ? `<p class="profile-description">${profile.description}</p>` : ''}
           ${socialLinksHTML}
         </div>
