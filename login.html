@@ -66,6 +66,23 @@
                         <label for="register-password">Password</label>
                         <input type="password" id="register-password" required>
                     </div>
+                    <div class="form-group">
+                        <label for="register-description">Descrizione (opzionale)</label>
+                        <textarea id="register-description" class="form-control" rows="3" placeholder="Raccontaci qualcosa di te..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Immagine del profilo (opzionale)</label>
+                        <div class="avatar-upload">
+                            <div id="register-avatar-preview" class="avatar-preview">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <label for="register-avatar" class="avatar-upload-btn">
+                                <i class="fas fa-camera"></i> Scegli immagine
+                                <input type="file" id="register-avatar" accept="image/*" style="display: none;">
+                            </label>
+                            <small class="text-muted">Max 5MB (JPG, PNG, GIF)</small>
+                        </div>
+                    </div>
                     <button type="submit" class="btn btn-full">Registrati</button>
                 </form>
                 <p class="error-message" id="register-error"></p>

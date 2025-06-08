@@ -72,6 +72,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   })
 
+  // Gestione anteprima avatar
+  const registerAvatarInput = document.getElementById('register-avatar');
+  const registerAvatarPreview = document.getElementById('register-avatar-preview');
+  
+  if (registerAvatarInput && registerAvatarPreview) {
+    registerAvatarInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          registerAvatarPreview.style.backgroundImage = `url('${e.target.result}')`;
+          registerAvatarPreview.innerHTML = '';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
   // Register form
   document.getElementById("register-form").addEventListener("submit", async (e) => {
     e.preventDefault()
@@ -79,6 +97,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const name = document.getElementById("register-name").value.trim()
     const email = document.getElementById("register-email").value.trim()
     const password = document.getElementById("register-password").value
+    const description = document.getElementById("register-description").value.trim()
+    const avatarFile = document.getElementById("register-avatar").files[0]
     const errorEl = document.getElementById("register-error")
     const successEl = document.getElementById("register-success")
     const submitBtn = e.target.querySelector('button[type="submit"]')
@@ -109,21 +129,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
       console.log("📝 Tentativo di registrazione per:", email)
-      const user = await window.api.registerUser({ name, email, password })
+      
+      // 1. Registra l'utente
+      const user = await window.api.registerUser({ 
+        name, 
+        email, 
+        password,
+        description,
+        avatarFile
+      })
+      
       console.log("✅ Registrazione riuscita:", user)
 
-      // Auto login dopo registrazione
+      // 2. Auto login dopo registrazione
       const { password: pwd, ...userInfo } = user
       localStorage.setItem("arteAnima_currentUser", JSON.stringify(userInfo))
 
       successEl.textContent = "Registrazione completata!"
 
       setTimeout(() => {
-        window.location.href = "dashboard.html"
+        window.location.href = "profile.html" // Reindirizza alla pagina del profilo
       }, 1000)
     } catch (error) {
       console.error("❌ Errore registrazione:", error)
-      errorEl.textContent = error.message
+      errorEl.textContent = typeof error === 'string' ? error : (error.message || "Si è verificato un errore durante la registrazione")
 
       // Riabilita il bottone
       submitBtn.disabled = false

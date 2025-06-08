@@ -119,37 +119,71 @@ class DatabaseManager {
       throw new Error("Supabase non inizializzato")
     }
 
-    const { data: existingUser } = await supabase
-      .from("users")
-      .select("*")
-      .eq("email", userData.email)
-      .single()
+    try {
+      // 1. Verifica se l'utente esiste già
+      const { data: existingUser } = await supabase
+        .from("users")
+        .select("*")
+        .eq("email", userData.email)
+        .single()
 
-    if (existingUser) {
-      throw new Error("Email già registrata")
-    }
+      if (existingUser) {
+        throw new Error("Email già registrata")
+      }
 
-    const { data: newUser, error } = await supabase
-      .from("users")
-      .insert([
-        {
-          name: userData.name,
-          email: userData.email,
-          password: userData.password,
-          is_admin: false,
-          social_links: {
-            youtube: "",
-            instagram: "",
-            website: "",
-            other: ""
+      let avatarUrl = ''
+      
+      // 2. Se c'è un'immagine, caricala su Storage
+      if (userData.avatarFile) {
+        const fileExt = userData.avatarFile.name.split('.').pop()
+        const fileName = `avatars/${Date.now()}.${fileExt}`
+        
+        // Carica il file
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(fileName, userData.avatarFile)
+        
+        if (uploadError) {
+          console.error("Errore durante l'upload dell'avatar:", uploadError)
+          // Continua senza avatar in caso di errore
+        } else {
+          // Ottieni l'URL pubblico
+          const { data: { publicUrl } } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(fileName)
+          
+          avatarUrl = publicUrl
+        }
+      }
+
+      // 3. Crea l'utente nel database
+      const { data: newUser, error } = await supabase
+        .from("users")
+        .insert([
+          {
+            name: userData.name,
+            email: userData.email,
+            password: userData.password, // Nota: in produzione, assicurati di usare l'hashing della password
+            is_admin: false,
+            description: userData.description || "",
+            avatar_url: avatarUrl,
+            social_links: {
+              youtube: "",
+              instagram: "",
+              website: "",
+              other: ""
+            }
           },
-          description: ""
-        },
-      ])
-      .select()
-      .single()
+        ])
+        .select()
+        .single()
 
-    if (error) throw error
+        return newUser
+      
+    } catch (error) {
+      console.error("Errore durante la registrazione:", error)
+      throw error
+    }
 
     return {
       id: newUser.id,
