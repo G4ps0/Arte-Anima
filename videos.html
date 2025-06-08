@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video - Arte Anima</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/videos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Arte Anima</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="videos.html" class="active">Video</a></li>
+                    <li><a href="explore.html">Artisti</a></li>
+                    <li><a href="login.html" class="btn-login" id="auth-btn">Accedi</a></li>
+                </ul>
+            </nav>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <section class="videos-hero">
+        <div class="container">
+            <h2>Tutti i Video</h2>
+            <p>Scopri i contenuti della community</p>
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Cerca video, utenti...">
+                <button id="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <section class="videos-content">
+        <div class="container">
+            <div class="filters">
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-sort="date">Per Data</button>
+                    <button class="filter-btn" data-sort="title">Alfabetico</button>
+                    <button class="filter-btn" data-sort="user">Per Utente</button>
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <i class="fas fa-spinner"></i>
+                <p>Caricamento video...</p>
+            </div>
+
+            <div class="videos-grid" id="videos-grid">
+                <!-- Video caricati dinamicamente -->
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Arte Anima. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
+
+    <script src="js/supabase-config.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/videos.js"></script>
+</body>
+</html>
