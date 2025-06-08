@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           isAdmin: artist.isAdmin || false,
           totalVideos: artist.totalVideos || 0,
           createdAt: artist.createdAt || new Date().toISOString(),
-          description: artist.description || generateUserDescription(artist),
+          description: artist.description || '', // Mostriamo solo la descrizione inserita dall'utente
           avatarText: artist.name ? artist.name.charAt(0).toUpperCase() : 'U',
           social_links: {
             youtube: socialLinks.youtube || '',
@@ -124,15 +124,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Genera la descrizione dell'utente
-  function generateUserDescription(artist) {
-    if (artist.isAdmin) {
-      return 'Amministratore della piattaforma. Creatore di contenuti artistici e culturali.'
-    }
-    if (artist.totalVideos === 0) {
-      return 'Nuovo membro della community Arte Anima.'
-    }
-    return `Artista con ${artist.totalVideos} video condivisi nella community.`
+  // Funzione deprecata - Mantenuta per retrocompatibilità
+  function generateUserDescription() {
+    return ''; // Non generiamo più descrizioni automatiche
   }
 
   // Mostra/nascondi il caricamento

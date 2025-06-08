@@ -449,6 +449,10 @@ footer {
   margin: 10px 0;
   font-size: 0.95rem;
   line-height: 1.5;
+  min-height: 40px; /* Altezza minima per mantenere lo spazio */
+  font-style: italic;
+  color: var(--text-light);
+  font-size: 0.9rem;
 }
 
 .profile-social-links {
