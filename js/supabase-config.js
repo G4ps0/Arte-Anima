@@ -1,7 +1,7 @@
-// Configurazione Supabase per Arte Anima - SOLO SUPABASE
+// Configurazione Supabase per Arte & Anima - SOLO SUPABASE
 class SupabaseConfig {
   constructor() {
-    console.log("🚀 Inizializzazione Arte Anima con Supabase...")
+    console.log("🚀 Inizializzazione Arte & Anima con Supabase...")
 
     // 🔧 Configurazione Supabase
     this.supabaseUrl = "https://qthnrtpoxdjbyppaybuj.supabase.co"

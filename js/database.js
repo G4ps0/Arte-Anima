@@ -44,7 +44,7 @@ class DatabaseManager {
           .from("users")
           .insert([
             {
-              name: "Arte Anima Admin",
+              name: "Arte & Anima Admin",
               email: "arteanima1999@gmail.com",
               password: "loremirko123",
               is_admin: true,

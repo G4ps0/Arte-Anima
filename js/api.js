@@ -1,4 +1,4 @@
-// API principale per Arte Anima - SOLO SUPABASE
+// API principale per Arte & Anima - SOLO SUPABASE
 class ArteAnimaAPI {
   constructor() {
     this.db = window.db
