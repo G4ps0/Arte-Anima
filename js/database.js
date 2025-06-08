@@ -113,6 +113,56 @@ class DatabaseManager {
   }
 
   // GESTIONE UTENTI
+  // Funzione per ridimensionare l'immagine
+  resizeImage(file, maxWidth = 800, maxHeight = 800, quality = 0.8) {
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const img = new Image()
+        img.onload = () => {
+          const canvas = document.createElement('canvas')
+          let width = img.width
+          let height = img.height
+
+          // Calcola le nuove dimensioni mantenendo le proporzioni
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width)
+              width = maxWidth
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height)
+              height = maxHeight
+            }
+          }
+
+          // Imposta le dimensioni del canvas
+          canvas.width = width
+          canvas.height = height
+          
+          // Disegna l'immagine ridimensionata
+          const ctx = canvas.getContext('2d')
+          ctx.drawImage(img, 0, 0, width, height)
+          
+          // Converti in blob
+          canvas.toBlob(
+            (blob) => {
+              resolve(new File([blob], file.name, {
+                type: 'image/jpeg',
+                lastModified: Date.now()
+              }))
+            },
+            'image/jpeg',
+            quality
+          )
+        }
+        img.src = e.target.result
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
   async registerUser(userData) {
     const supabase = await this.getClient()
     if (!supabase) {
@@ -132,27 +182,39 @@ class DatabaseManager {
       }
 
       let avatarUrl = ''
+      let avatarFile = userData.avatarFile
       
-      // 2. Se c'è un'immagine, caricala su Storage
-      if (userData.avatarFile) {
-        const fileExt = userData.avatarFile.name.split('.').pop()
-        const fileName = `avatars/${Date.now()}.${fileExt}`
-        
-        // Carica il file
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('avatars')
-          .upload(fileName, userData.avatarFile)
-        
-        if (uploadError) {
-          console.error("Errore durante l'upload dell'avatar:", uploadError)
-          // Continua senza avatar in caso di errore
-        } else {
+      // 2. Se c'è un'immagine, ridimensionala e caricala su Storage
+      if (avatarFile) {
+        try {
+          // Ridimensiona l'immagine (max 800x800px, qualità 80%)
+          const resizedFile = await this.resizeImage(avatarFile, 800, 800, 0.8)
+          
+          // Genera un nome file univoco
+          const fileExt = 'jpg' // Usiamo sempre jpg dopo il ridimensionamento
+          const fileName = `avatars/${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
+          
+          // Carica il file ridimensionato
+          const { error: uploadError } = await supabase.storage
+            .from('avatars')
+            .upload(fileName, resizedFile, {
+              cacheControl: '3600',
+              upsert: false,
+              contentType: 'image/jpeg'
+            })
+          
+          if (uploadError) throw uploadError
+          
           // Ottieni l'URL pubblico
           const { data: { publicUrl } } = supabase.storage
             .from('avatars')
             .getPublicUrl(fileName)
           
           avatarUrl = publicUrl
+          
+        } catch (error) {
+          console.error("Errore durante l'elaborazione dell'avatar:", error)
+          // Continua senza avatar in caso di errore
         }
       }
 
