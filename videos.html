@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video - Arte & Anima</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/videos.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -28,25 +27,22 @@
         </div>
     </header>
 
-    <section class="videos-hero">
+    <section class="page-header">
         <div class="container">
             <h2>Tutti i Video</h2>
-            <p>Scopri i contenuti della community</p>
             <div class="search-bar">
-                <input type="text" id="search-input" placeholder="Cerca video, utenti...">
+                <input type="text" id="search-input" placeholder="Cerca video o artisti...">
                 <button id="search-btn"><i class="fas fa-search"></i></button>
             </div>
         </div>
     </section>
 
-    <section class="videos-content">
+    <section class="content">
         <div class="container">
             <div class="filters">
-                <div class="filter-buttons">
-                    <button class="filter-btn active" data-sort="date">Per Data</button>
-                    <button class="filter-btn" data-sort="title">Alfabetico</button>
-                    <button class="filter-btn" data-sort="user">Per Utente</button>
-                </div>
+                <button class="filter-btn active" data-sort="date">Per Data</button>
+                <button class="filter-btn" data-sort="title">Alfabetico</button>
+                <button class="filter-btn" data-sort="user">Per Artista</button>
             </div>
 
             <div class="loading" id="loading">
@@ -60,15 +56,8 @@
         </div>
     </section>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Arte & Anima. Tutti i diritti riservati.</p>
-        </div>
-    </footer>
-
-    <script src="js/supabase-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/database.js"></script>
-    <script src="js/api.js"></script>
     <script src="js/videos.js"></script>
 </body>
 </html>

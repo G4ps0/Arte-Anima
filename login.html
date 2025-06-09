@@ -1,105 +1,147 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accedi - Arte & Anima</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Arte & Anima</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="logo">
-                <h1>Arte & Anima</h1>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="videos.html">Video</a></li>
-                    <li><a href="explore.html">Artisti</a></li>
-                    <li><a href="login.html" class="btn-login active">Accedi</a></li>
-                </ul>
-            </nav>
-            <div class="menu-toggle">
-                <i class="fas fa-bars"></i>
-            </div>
-        </div>
-    </header>
+  <div class="container">
+    <div class="auth-container">
+      <!-- Form di Login -->
+      <div class="auth-form">
+        <h1>Accedi</h1>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" required>
+          </div>
+          <button type="submit" class="btn">Accedi</button>
+        </form>
+        <div id="login-message" class="message"></div>
+      </div>
 
-    <section class="auth-container">
-        <div class="auth-card">
-            <div class="auth-tabs">
-                <button class="tab-btn active" data-tab="login">Accedi</button>
-                <button class="tab-btn" data-tab="register">Registrati</button>
-            </div>
-            
-            <div class="tab-content" id="login-tab">
-                <h2>Accedi</h2>
-                <form id="login-form">
-                    <div class="form-group">
-                        <label for="login-email">Email</label>
-                        <input type="email" id="login-email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="login-password">Password</label>
-                        <input type="password" id="login-password" required>
-                    </div>
-                    <button type="submit" class="btn btn-full">Accedi</button>
-                </form>
-                <p class="error-message" id="login-error"></p>
-                <p class="success-message" id="login-success"></p>
-            </div>
-            
-            <div class="tab-content hidden" id="register-tab">
-                <h2>Registrati</h2>
-                <form id="register-form">
-                    <div class="form-group">
-                        <label for="register-name">Nome</label>
-                        <input type="text" id="register-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="register-email">Email</label>
-                        <input type="email" id="register-email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="register-password">Password</label>
-                        <input type="password" id="register-password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="register-description">Descrizione (opzionale)</label>
-                        <textarea id="register-description" class="form-control" rows="3" placeholder="Raccontaci qualcosa di te..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Immagine del profilo (opzionale)</label>
-                        <div class="avatar-upload">
-                            <div id="register-avatar-preview" class="avatar-preview">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <label for="register-avatar" class="avatar-upload-btn">
-                                <i class="fas fa-camera"></i> Scegli immagine
-                                <input type="file" id="register-avatar" accept="image/*" style="display: none;">
-                            </label>
-                            <small class="text-muted">Max 5MB (JPG, PNG, GIF)</small>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-full">Registrati</button>
-                </form>
-                <p class="error-message" id="register-error"></p>
-                <p class="success-message" id="register-success"></p>
-            </div>
-        </div>
-    </section>
+      <!-- Form di Registrazione -->
+      <div class="auth-form">
+        <h1>Registrati</h1>
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="register-name">Nome</label>
+            <input type="text" id="register-name" required>
+          </div>
+          <div class="form-group">
+            <label for="register-email">Email</label>
+            <input type="email" id="register-email" required>
+          </div>
+          <div class="form-group">
+            <label for="register-password">Password</label>
+            <input type="password" id="register-password" required>
+          </div>
+          <div class="form-group">
+            <label for="register-description">Descrizione (opzionale)</label>
+            <textarea id="register-description" placeholder="Parlaci di te..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="register-youtube">Canale YouTube (opzionale)</label>
+            <input type="url" id="register-youtube" placeholder="https://www.youtube.com/@tuocanale">
+          </div>
+          <button type="submit" class="btn">Registrati</button>
+        </form>
+        <div id="register-message" class="message"></div>
+      </div>
+    </div>
+  </div>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Arte & Anima. Tutti i diritti riservati.</p>
-        </div>
-    </footer>
+  <style>
+    .auth-container {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .auth-form {
+      flex: 1;
+      min-width: 300px;
+      max-width: 500px;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="url"],
+    textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      text-decoration: none;
+      width: 100%;
+    }
+    .btn:hover {
+      background: #45a049;
+    }
+    .btn-secondary {
+      background: #6c757d;
+    }
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+    .message {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 4px;
+      display: none;
+    }
+    .alert {
+      display: block !important;
+    }
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .alert-danger {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
 
-    <script src="js/supabase-config.js"></script>
-    <script src="js/database.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/database.js"></script>
+  <script src="js/auth.js"></script>
 </body>
 </html>

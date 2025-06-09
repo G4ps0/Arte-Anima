@@ -1,10 +1,8 @@
+// Dashboard JavaScript
 document.addEventListener("DOMContentLoaded", async () => {
-  console.log("📊 Inizializzazione dashboard...")
-
-  // Check if user is logged in
+  // Controlla se l'utente è loggato
   const userJson = localStorage.getItem("arteAnima_currentUser")
   if (!userJson) {
-    console.log("❌ Utente non loggato, reindirizzamento...")
     window.location.href = "login.html"
     return
   }
@@ -12,13 +10,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const currentUser = JSON.parse(userJson)
   console.log("👤 Utente corrente:", currentUser)
 
-  // Aspetta che l'API sia pronta
-  while (!window.api) {
-    console.log("⏳ Aspettando inizializzazione API...")
-    await new Promise((resolve) => setTimeout(resolve, 100))
-  }
-
-  // Menu toggle for mobile
+  // Menu toggle per mobile
   const menuToggle = document.querySelector(".menu-toggle")
   const navMenu = document.querySelector("nav ul")
 
@@ -28,24 +20,58 @@ document.addEventListener("DOMContentLoaded", async () => {
     })
   }
 
-  // Update user info
+  // Aggiorna info utente
   function updateUserInfo() {
     document.getElementById("user-name").textContent = currentUser.name
     document.getElementById("user-email").textContent = currentUser.email
 
-    if (currentUser.isAdmin) {
-      document.getElementById("admin-badge").style.display = "flex"
+    // Avatar con iniziale
+    const userAvatar = document.getElementById("user-avatar")
+    const initial = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : "U"
+    userAvatar.textContent = initial
+
+    // Badge admin
+    if (currentUser.is_admin) {
+      document.getElementById("admin-badge").style.display = "block"
     }
+
+    // Popola campi profilo
+    document.getElementById("user-description").value = currentUser.description || ""
+    document.getElementById("user-youtube").value = currentUser.youtube_channel || ""
   }
 
-  // Logout functionality
+  // Logout
   document.getElementById("logout-btn").addEventListener("click", (e) => {
     e.preventDefault()
     localStorage.removeItem("arteAnima_currentUser")
     window.location.href = "index.html"
   })
 
-  // Load user videos
+  // Aggiorna profilo
+  document.getElementById("profile-form").addEventListener("submit", async (e) => {
+    e.preventDefault()
+
+    const description = document.getElementById("user-description").value.trim()
+    const youtubeChannel = document.getElementById("user-youtube").value.trim()
+
+    try {
+      await window.db.updateProfile(currentUser.id, {
+        description,
+        youtubeChannel,
+      })
+
+      // Aggiorna dati locali
+      currentUser.description = description
+      currentUser.youtube_channel = youtubeChannel
+      localStorage.setItem("arteAnima_currentUser", JSON.stringify(currentUser))
+
+      alert("Profilo aggiornato con successo!")
+    } catch (error) {
+      alert("Errore: " + error.message)
+    }
+  })
+
+  // Carica video utente
   async function loadUserVideos() {
     try {
       const loadingEl = document.getElementById("loading")
@@ -54,16 +80,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       loadingEl.style.display = "block"
       videosContainer.style.display = "none"
 
-      console.log("📹 Caricamento video per utente:", currentUser.id)
-      const videos = await window.api.getUserVideos(currentUser.id)
-      console.log("✅ Video caricati:", videos.length)
-
+      const videos = await window.db.getUserVideos(currentUser.id)
       displayUserVideos(videos)
 
-      // Update stats
+      // Aggiorna stats
       document.getElementById("total-videos").textContent = videos.length
     } catch (error) {
-      console.error("❌ Errore caricamento video:", error)
+      console.error("Errore caricamento video:", error)
       alert("Errore nel caricamento dei video: " + error.message)
     } finally {
       document.getElementById("loading").style.display = "none"
@@ -71,14 +94,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Display user videos
+  // Mostra video utente
   function displayUserVideos(videos) {
     const videosContainer = document.getElementById("videos-container")
     videosContainer.innerHTML = ""
 
     if (videos.length === 0) {
       videosContainer.innerHTML = `
-        <div class="empty-section" style="grid-column: 1 / -1;">
+        <div class="empty-state">
           <i class="fas fa-video-slash"></i>
           <h3>Nessun video</h3>
           <p>Aggiungi il tuo primo video!</p>
@@ -88,7 +111,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     videos.forEach((video) => {
-      const videoId = window.api.extractYouTubeId(video.url)
+      const videoId = window.db.extractYouTubeId(video.url)
       if (!videoId) return
 
       const videoCard = document.createElement("div")
@@ -107,7 +130,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           <h3>${video.title}</h3>
           <p>${video.description || "Nessuna descrizione"}</p>
           <div class="video-meta">
-            <span>${new Date(video.createdAt).toLocaleDateString("it-IT")}</span>
+            <span>${new Date(video.created_at).toLocaleDateString("it-IT")}</span>
           </div>
           <div class="video-actions">
             <button onclick="deleteVideo('${video.id}')">
@@ -121,7 +144,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     })
   }
 
-  // Modal functionality
+  // Modal video
   const addVideoBtn = document.getElementById("add-video-btn")
   const addVideoModal = document.getElementById("add-video-modal")
   const closeModal = document.querySelector(".close-modal")
@@ -140,7 +163,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   })
 
-  // Add video form
+  // Aggiungi video
   document.getElementById("add-video-form").addEventListener("submit", async (e) => {
     e.preventDefault()
 
@@ -154,36 +177,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-      console.log("➕ Aggiunta video:", { title, url })
-      await window.api.addVideo(currentUser.id, { title, url, description })
-      console.log("✅ Video aggiunto con successo")
+      await window.db.addVideo(currentUser.id, { title, url, description })
 
       document.getElementById("add-video-form").reset()
       addVideoModal.style.display = "none"
 
       await loadUserVideos()
     } catch (error) {
-      console.error("❌ Errore aggiunta video:", error)
       alert("Errore: " + error.message)
     }
   })
 
-  // Delete video function (global)
+  // Elimina video (funzione globale)
   window.deleteVideo = async (videoId) => {
     if (!confirm("Sei sicuro di voler eliminare questo video?")) return
 
     try {
-      console.log("🗑️ Eliminazione video:", videoId)
-      await window.api.deleteVideo(videoId, currentUser.id)
-      console.log("✅ Video eliminato")
+      await window.db.deleteVideo(videoId, currentUser.id)
       await loadUserVideos()
     } catch (error) {
-      console.error("❌ Errore eliminazione video:", error)
       alert("Errore: " + error.message)
     }
   }
 
-  // Initialize
+  // Inizializza
   updateUserInfo()
   await loadUserVideos()
 })

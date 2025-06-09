@@ -1,496 +1,218 @@
-// Database manager - SOLO SUPABASE
+// Database Manager corretto per UUID - Arte Anima
 class DatabaseManager {
   constructor() {
-    this.config = window.supabaseConfig
+    // Le tue credenziali Supabase
+    const supabaseUrl = "https://mfaizhxefjjalamqtrvq.supabase.co"
+    const supabaseKey =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mYWl6aHhlZmpqYWxhbXF0cnZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0Mjc3OTEsImV4cCI6MjA2NTAwMzc5MX0.VGkazW_svsgDtB4xk1akC61kjsSees7Ty6KJxyXhlt8"
+
+    this.supabase = supabase.createClient(supabaseUrl, supabaseKey)
+    console.log("✅ Database Manager inizializzato con UUID")
   }
 
-  // Inizializza il database
-  async initialize() {
-    console.log("🗄️ Inizializzazione database...")
-    try {
-      // Attendi che Supabase sia inizializzato
-      this.supabase = await this.config.waitForInitialization()
-      if (!this.supabase) {
-        throw new Error("Impossibile inizializzare Supabase")
-      }
-      await this.initializeSupabase()
-    } catch (error) {
-      console.error("❌ Errore inizializzazione database:", error)
-      throw error
-    }
-  }
-
-  async initializeSupabase() {
-    try {
-      if (!this.supabase) {
-        throw new Error("Supabase non inizializzato")
-      }
-
-      // Verifica se l'admin esiste già
-      const { data: existingAdmin, error: fetchError } = await this.supabase
-        .from("users")
-        .select("*")
-        .eq("email", "arteanima1999@gmail.com")
-        .single()
-
-      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = no rows returned
-        throw fetchError
-      }
-
-      if (!existingAdmin) {
-        console.log("👤 Creazione admin di default...")
-        // Crea l'admin
-        const { error: insertError } = await this.supabase
-          .from("users")
-          .insert([
-            {
-              name: "Arte & Anima Admin",
-              email: "arteanima1999@gmail.com",
-              password: "loremirko123",
-              is_admin: true,
-            },
-          ])
-
-        if (insertError) {
-          console.error("❌ Errore creazione admin:", insertError)
-          throw insertError
-        }
-        console.log("✅ Admin creato con successo")
-      } else {
-        console.log("✅ Admin già presente nel database")
-      }
-    } catch (error) {
-      console.error("❌ Errore inizializzazione database:", error)
-      throw error
-    }
-  }
-
-  // Restituisce il client Supabase
-  async getClient() {
-    if (!this.supabase) {
-      this.supabase = await this.config.waitForInitialization()
-    }
-    return this.supabase
-  }
-
-  // GESTIONE UTENTI
-  async getPublicArtists() {
-    try {
-      const supabase = await this.getClient()
-      if (!supabase) {
-        throw new Error("Supabase non inizializzato")
-      }
-
-      const { data: users, error } = await supabase
-        .from('users')
-        .select(`
-          *,
-          videos:user_id(count)
-        `)
-        .order('name', { ascending: true })
-      if (error) throw error
-
-      // Formatta i dati per la risposta
-      return users.map(user => ({
-        id: user.id,
-        name: user.name || 'Utente Senza Nome',
-        email: user.email,
-        isAdmin: user.is_admin || false,
-        totalVideos: user.videos?.[0]?.count || 0,
-        createdAt: user.created_at || new Date().toISOString(),
-        description: user.description || "",
-        social_links: user.social_links || {
-          youtube: "",
-          instagram: "",
-          website: "",
-          other: ""
-        }
-      }))
-    } catch (error) {
-      console.error("Errore nel recupero degli artisti:", error)
-      throw error
-    }
-  }
-
-  // GESTIONE UTENTI
-  // Funzione per ridimensionare l'immagine
-  resizeImage(file, maxWidth = 800, maxHeight = 800, quality = 0.8) {
-    return new Promise((resolve) => {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const img = new Image()
-        img.onload = () => {
-          const canvas = document.createElement('canvas')
-          let width = img.width
-          let height = img.height
-
-          // Calcola le nuove dimensioni mantenendo le proporzioni
-          if (width > height) {
-            if (width > maxWidth) {
-              height = Math.round((height * maxWidth) / width)
-              width = maxWidth
-            }
-          } else {
-            if (height > maxHeight) {
-              width = Math.round((width * maxHeight) / height)
-              height = maxHeight
-            }
-          }
-
-          // Imposta le dimensioni del canvas
-          canvas.width = width
-          canvas.height = height
-          
-          // Disegna l'immagine ridimensionata
-          const ctx = canvas.getContext('2d')
-          ctx.drawImage(img, 0, 0, width, height)
-          
-          // Converti in blob
-          canvas.toBlob(
-            (blob) => {
-              resolve(new File([blob], file.name, {
-                type: 'image/jpeg',
-                lastModified: Date.now()
-              }))
-            },
-            'image/jpeg',
-            quality
-          )
-        }
-        img.src = e.target.result
-      }
-      reader.readAsDataURL(file)
-    })
-  }
-
+  // Registrazione utente
   async registerUser(userData) {
-    const supabase = await this.getClient()
-    if (!supabase) {
-      throw new Error("Supabase non inizializzato")
-    }
-
     try {
-      // 1. Verifica se l'utente esiste già
-      const { data: existingUser } = await supabase
+      const { data, error } = await this.supabase
         .from("users")
-        .select("*")
-        .eq("email", userData.email)
-        .single()
-
-      if (existingUser) {
-        throw new Error("Email già registrata")
-      }
-
-      let avatarUrl = ''
-      let avatarFile = userData.avatarFile
-      
-      // 2. Se c'è un'immagine, ridimensionala e caricala su Storage
-      if (avatarFile) {
-        try {
-          // Ridimensiona l'immagine (max 800x800px, qualità 80%)
-          const resizedFile = await this.resizeImage(avatarFile, 800, 800, 0.8)
-          
-          // Genera un nome file univoco
-          const fileExt = 'jpg' // Usiamo sempre jpg dopo il ridimensionamento
-          const fileName = `avatars/${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
-          
-          // Carica il file ridimensionato
-          const { error: uploadError } = await supabase.storage
-            .from('avatars')
-            .upload(fileName, resizedFile, {
-              cacheControl: '3600',
-              upsert: false,
-              contentType: 'image/jpeg'
-            })
-          
-          if (uploadError) throw uploadError
-          
-          // Ottieni l'URL pubblico
-          const { data: { publicUrl } } = supabase.storage
-            .from('avatars')
-            .getPublicUrl(fileName)
-          
-          avatarUrl = publicUrl
-          
-        } catch (error) {
-          console.error("Errore durante l'elaborazione dell'avatar:", error)
-          // Continua senza avatar in caso di errore
-        }
-      }
-
-      // 3. Crea l'utente nel database
-      const { data: newUser, error } = await supabase
-        .from("users")
-        .insert([
-          {
-            name: userData.name,
-            email: userData.email,
-            password: userData.password, // Nota: in produzione, assicurati di usare l'hashing della password
-            is_admin: false,
-            description: userData.description || "",
-            avatar_url: avatarUrl,
-            social_links: {
-              youtube: "",
-              instagram: "",
-              website: "",
-              other: ""
-            }
-          },
-        ])
+        .insert({
+          name: userData.name,
+          email: userData.email,
+          password: userData.password,
+          description: userData.description || "",
+          youtube_channel: userData.youtubeChannel || "",
+          is_admin: false,
+        })
         .select()
         .single()
 
-        return newUser
-      
+      if (error) throw error
+      return data
     } catch (error) {
-      console.error("Errore durante la registrazione:", error)
-      throw error
-    }
-
-    return {
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
-      isAdmin: newUser.is_admin,
-      createdAt: newUser.created_at,
-      description: newUser.description || "",
-      social_links: newUser.social_links || {
-        youtube: "",
-        instagram: "",
-        website: "",
-        other: ""
-      }
+      console.error("Errore registrazione:", error)
+      throw new Error(error.message || "Errore durante la registrazione")
     }
   }
 
+  // Login utente
   async loginUser(email, password) {
-    const supabase = await this.getClient()
-    if (!supabase) {
-      throw new Error("Supabase non inizializzato")
-    }
+    try {
+      const { data, error } = await this.supabase
+        .from("users")
+        .select("*")
+        .eq("email", email)
+        .eq("password", password)
+        .single()
 
-    const { data: user, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("email", email)
-      .eq("password", password)
-      .single()
-
-    if (error || !user) {
+      if (error || !data) throw new Error("Credenziali non valide")
+      return data
+    } catch (error) {
+      console.error("Errore login:", error)
       throw new Error("Email o password non validi")
     }
+  }
 
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.is_admin,
-      createdAt: user.created_at,
-      description: user.description || "",
-      social_links: user.social_links || {
-        youtube: "",
-        instagram: "",
-        website: "",
-        other: ""
-      }
+  // Aggiorna profilo utente
+  async updateProfile(userId, updates) {
+    try {
+      const { data, error } = await this.supabase
+        .from("users")
+        .update({
+          description: updates.description,
+          youtube_channel: updates.youtubeChannel,
+        })
+        .eq("id", userId)
+        .select()
+        .single()
+
+      if (error) throw error
+      return data
+    } catch (error) {
+      console.error("Errore aggiornamento profilo:", error)
+      throw new Error("Errore durante l'aggiornamento del profilo")
     }
   }
 
-  // GESTIONE VIDEO
+  // Aggiungi video
   async addVideo(userId, videoData) {
-    const supabase = await this.getClient()
-    if (!supabase) {
-      throw new Error("Supabase non inizializzato")
-    }
+    try {
+      const videoId = this.extractYouTubeId(videoData.url)
+      if (!videoId) throw new Error("URL YouTube non valido")
 
-    const videoId = this.extractYouTubeId(videoData.url)
-    if (!videoId) {
-      throw new Error("URL YouTube non valido")
-    }
+      const embedUrl = `https://www.youtube.com/embed/${videoId}`
 
-    const { data: newVideo, error } = await supabase
-      .from("videos")
-      .insert([
-        {
+      const { data, error } = await this.supabase
+        .from("videos")
+        .insert({
           user_id: userId,
           title: videoData.title,
-          url: videoData.url,
+          url: embedUrl,
           description: videoData.description || "",
-        },
-      ])
-      .select()
-      .single()
+        })
+        .select(`
+          *,
+          user:users(name, is_admin)
+        `)
+        .single()
 
-    if (error) throw error
-
-    return {
-      id: newVideo.id,
-      userId: newVideo.user_id,
-      title: newVideo.title,
-      url: newVideo.url,
-      description: newVideo.description,
-      createdAt: newVideo.created_at,
+      if (error) throw error
+      return data
+    } catch (error) {
+      console.error("Errore aggiunta video:", error)
+      throw new Error(error.message || "Errore durante l'aggiunta del video")
     }
   }
 
+  // Ottieni video utente
   async getUserVideos(userId) {
-    const supabase = await this.getClient()
-    if (!supabase) {
-      throw new Error("Supabase non inizializzato")
+    try {
+      const { data, error } = await this.supabase
+        .from("videos")
+        .select(`
+          *,
+          user:users(name, is_admin)
+        `)
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+
+      if (error) throw error
+      return data || []
+    } catch (error) {
+      console.error("Errore caricamento video utente:", error)
+      throw new Error("Errore durante il caricamento dei video")
     }
-
-    const { data: videos, error } = await supabase
-      .from("videos")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-
-    if (error) throw error
-
-    return videos.map((video) => ({
-      id: video.id,
-      userId: video.user_id,
-      title: video.title,
-      url: video.url,
-      description: video.description,
-      createdAt: video.created_at
-    }))
   }
 
+  // Ottieni tutti i video
   async getAllVideos() {
-    const supabase = await this.getClient()
-    if (!supabase) {
-      throw new Error("Supabase non inizializzato")
+    try {
+      const { data, error } = await this.supabase
+        .from("videos")
+        .select(`
+          *,
+          user:users(name, is_admin)
+        `)
+        .order("created_at", { ascending: false })
+
+      if (error) throw error
+      return data || []
+    } catch (error) {
+      console.error("Errore caricamento tutti i video:", error)
+      throw new Error("Errore durante il caricamento dei video")
     }
-
-    const { data: videos, error } = await supabase
-      .from("videos")
-      .select(`
-        *,
-        users (
-          name,
-          is_admin
-        )
-      `)
-      .order("created_at", { ascending: false })
-
-    if (error) throw error
-
-    return videos.map((video) => ({
-      id: video.id,
-      userId: video.user_id,
-      title: video.title,
-      url: video.url,
-      description: video.description,
-      createdAt: video.created_at,
-      userName: video.users?.name || "Utente sconosciuto",
-      userIsAdmin: video.users?.is_admin || false,
-    }))
   }
 
+  // Elimina video
   async deleteVideo(videoId, userId) {
-    const supabase = await this.getClient()
-    if (!supabase) {
-      throw new Error("Supabase non inizializzato")
+    try {
+      // Verifica se l'utente può eliminare il video
+      const { data: video, error: videoError } = await this.supabase
+        .from("videos")
+        .select("user_id")
+        .eq("id", videoId)
+        .single()
+
+      if (videoError) throw videoError
+
+      // Verifica se l'utente è admin
+      const { data: user, error: userError } = await this.supabase
+        .from("users")
+        .select("is_admin")
+        .eq("id", userId)
+        .single()
+
+      if (userError) throw userError
+
+      // Può eliminare se è il proprietario o è admin
+      if (video.user_id !== userId && !user.is_admin) {
+        throw new Error("Non hai i permessi per eliminare questo video")
+      }
+
+      const { error } = await this.supabase.from("videos").delete().eq("id", videoId)
+
+      if (error) throw error
+    } catch (error) {
+      console.error("Errore eliminazione video:", error)
+      throw new Error(error.message || "Errore durante l'eliminazione del video")
     }
-
-    const { data: user } = await supabase.from("users").select("is_admin").eq("id", userId).single()
-
-    if (!user) throw new Error("Utente non trovato")
-
-    let query = supabase.from("videos").delete().eq("id", videoId)
-
-    if (!user.is_admin) {
-      query = query.eq("user_id", userId)
-    }
-
-    const { error } = await query
-
-    if (error) throw new Error("Non autorizzato o video non trovato")
   }
 
+  // Ottieni tutti gli utenti (per explore)
   async getAllUsers() {
-    const supabase = await this.getClient()
-    if (!supabase) {
-      throw new Error("Supabase non inizializzato")
+    try {
+      const { data: users, error: usersError } = await this.supabase
+        .from("users")
+        .select("*")
+        .order("created_at", { ascending: false })
+
+      if (usersError) throw usersError
+
+      // Conta i video per ogni utente
+      const { data: videos, error: videosError } = await this.supabase.from("videos").select("user_id")
+
+      if (videosError) throw videosError
+
+      const videoCounts = {}
+      videos.forEach((video) => {
+        videoCounts[video.user_id] = (videoCounts[video.user_id] || 0) + 1
+      })
+
+      return users.map((user) => ({
+        ...user,
+        totalVideos: videoCounts[user.id] || 0,
+      }))
+    } catch (error) {
+      console.error("Errore caricamento utenti:", error)
+      throw new Error("Errore durante il caricamento degli utenti")
     }
-
-    const { data: users, error } = await supabase
-      .from("users")
-      .select(`
-        *,
-        videos (count)
-      `)
-      .order("name", { ascending: true })
-
-    if (error) throw error
-
-    return users.map((user) => ({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.is_admin,
-      createdAt: user.created_at,
-      totalVideos: user.videos?.[0]?.count || 0,
-    }))
   }
 
-  // Aggiorna i link social di un utente
-  async updateSocialLinks(userId, socialLinks) {
-    const supabase = await this.getClient()
-    if (!supabase) {
-      throw new Error("Supabase non inizializzato")
-    }
-
-    const { data, error } = await supabase
-      .from('users')
-      .update({ social_links: socialLinks })
-      .eq('id', userId)
-      .select()
-
-    if (error) throw error
-    return data[0]
-  }
-
-  // Aggiorna la descrizione del profilo
-  async updateProfileDescription(userId, description) {
-    const supabase = await this.getClient()
-    if (!supabase) {
-      throw new Error("Supabase non inizializzato")
-    }
-
-    const { data, error } = await supabase
-      .from('users')
-      .update({ description })
-      .eq('id', userId)
-      .select()
-
-    if (error) throw error
-    return data[0]
-  }
-
-  // Utility
+  // Utility: estrai ID YouTube
   extractYouTubeId(url) {
     if (!url) return null
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
     const match = url.match(regExp)
     return match && match[2].length === 11 ? match[2] : null
-  }
-
-  async getStats() {
-    const supabase = this.config.getClient()
-
-    const [usersResult, videosResult, adminsResult] = await Promise.all([
-      supabase.from("users").select("id", { count: "exact" }),
-      supabase.from("videos").select("id", { count: "exact" }),
-      supabase.from("users").select("id", { count: "exact" }).eq("is_admin", true),
-    ])
-
-    return {
-      totalUsers: usersResult.count || 0,
-      totalVideos: videosResult.count || 0,
-      totalAdmins: adminsResult.count || 0,
-    }
   }
 }
 

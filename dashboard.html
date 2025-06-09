@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Arte & Anima</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
     <header>
@@ -16,6 +16,7 @@
             </div>
             <nav>
                 <ul>
+                    <li><a href="index.html">Home</a></li>
                     <li><a href="videos.html">Video</a></li>
                     <li><a href="explore.html">Artisti</a></li>
                     <li><a href="#" class="active">Dashboard</a></li>
@@ -29,30 +30,43 @@
     </header>
 
     <div class="container">
-        <div class="dashboard-container">
+        <div class="dashboard">
+            <!-- Sidebar -->
             <aside class="sidebar">
                 <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
+                    <div class="user-avatar" id="user-avatar">U</div>
                     <h3 id="user-name">Caricamento...</h3>
                     <p id="user-email">Caricamento...</p>
                     <div class="admin-badge" id="admin-badge" style="display: none;">
-                        <i class="fas fa-crown"></i>
-                        <span>Amministratore</span>
+                        <i class="fas fa-crown"></i> Admin
                     </div>
-                    <div class="user-stats">
-                        <div class="stat">
-                            <span class="stat-number" id="total-videos">0</span>
-                            <span class="stat-label">Video</span>
-                        </div>
+                    <div class="stats">
+                        <span id="total-videos">0</span> Video
                     </div>
                 </div>
-                <button class="btn btn-full" id="add-video-btn">
+                
+                <!-- Profilo -->
+                <div class="profile-section">
+                    <h4>Il Mio Profilo</h4>
+                    <form id="profile-form">
+                        <div class="form-group">
+                            <label for="user-description">Descrizione</label>
+                            <textarea id="user-description" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="user-youtube">Canale YouTube</label>
+                            <input type="url" id="user-youtube">
+                        </div>
+                        <button type="submit" class="btn">Aggiorna</button>
+                    </form>
+                </div>
+                
+                <button class="btn btn-add" id="add-video-btn">
                     <i class="fas fa-plus"></i> Aggiungi Video
                 </button>
             </aside>
 
+            <!-- Main Content -->
             <main class="main-content">
                 <div class="loading" id="loading">
                     <i class="fas fa-spinner"></i>
@@ -74,23 +88,22 @@
             <form id="add-video-form">
                 <div class="form-group">
                     <label for="video-title">Titolo</label>
-                    <input type="text" id="video-title" required placeholder="Inserisci il titolo del video">
+                    <input type="text" id="video-title" required>
                 </div>
                 <div class="form-group">
                     <label for="video-url">URL YouTube</label>
-                    <input type="url" id="video-url" placeholder="https://www.youtube.com/watch?v=..." required>
-                    <small style="color: #666; font-size: 0.9rem;">Incolla qui il link del tuo video YouTube</small>
+                    <input type="url" id="video-url" required>
                 </div>
                 <div class="form-group">
                     <label for="video-description">Descrizione (opzionale)</label>
-                    <textarea id="video-description" rows="4" placeholder="Descrivi il tuo video..."></textarea>
+                    <textarea id="video-description" rows="3"></textarea>
                 </div>
-                <button type="submit" class="btn btn-full">Aggiungi Video</button>
+                <button type="submit" class="btn">Aggiungi Video</button>
             </form>
         </div>
     </div>
 
-    <script src="js/supabase-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/database.js"></script>
     <script src="js/api.js"></script>
     <script src="js/dashboard.js"></script>
