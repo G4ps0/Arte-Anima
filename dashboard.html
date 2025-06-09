@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Arte & Anima</title>
+    <title>Dashboard - Arte&Anima</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/dashboard.css">
@@ -12,13 +12,14 @@
     <header>
         <div class="container">
             <div class="logo">
-                <h1>Arte & Anima</h1>
+                <h1>Arte&Anima</h1>
             </div>
             <nav>
                 <ul>
                     <li><a href="index.html">Home</a></li>
                     <li><a href="videos.html">Video</a></li>
                     <li><a href="explore.html">Artisti</a></li>
+                    <li><a href="normativa.html">Normativa</a></li>
                     <li><a href="#" class="active">Dashboard</a></li>
                     <li><a href="#" id="logout-btn">Esci</a></li>
                 </ul>
@@ -48,6 +49,9 @@
                 <!-- Profilo -->
                 <div class="profile-section">
                     <h4>Il Mio Profilo</h4>
+                    <button id="change-password-btn" class="btn btn-block">
+                        <i class="fas fa-key"></i> Cambia Password
+                    </button>
                     <form id="profile-form">
                         <div class="form-group">
                             <label for="user-description">Descrizione</label>
@@ -131,6 +135,26 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Modale Cambio Password -->
+    <div id="password-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Cambia Password</h2>
+            <form id="change-password-form">
+                <div class="form-group">
+                    <label for="new-password">Nuova Password</label>
+                    <input type="password" id="new-password" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Conferma Nuova Password</label>
+                    <input type="password" id="confirm-password" required minlength="6">
+                </div>
+                <button type="submit" class="btn btn-primary">Salva Nuova Password</button>
+                <div id="password-message" class="message"></div>
+            </form>
+        </div>
+    </div>
+
     <script src="js/database.js"></script>
     <script src="js/api.js"></script>
     <script src="js/dashboard.js"></script>

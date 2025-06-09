@@ -200,7 +200,102 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  // Gestione cambio password
+  const passwordModal = document.getElementById('password-modal');
+  const changePasswordBtn = document.getElementById('change-password-btn');
+  const closeBtn = document.querySelector('.close');
+  const changePasswordForm = document.getElementById('change-password-form');
+  const passwordMessage = document.getElementById('password-message');
+
+  // Apri modale
+  if (changePasswordBtn) {
+    changePasswordBtn.addEventListener('click', () => {
+      passwordModal.style.display = 'flex';
+    });
+  }
+
+  // Chiudi modale
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      passwordModal.style.display = 'none';
+      resetPasswordForm();
+    });
+  }
+
+  // Chiudi cliccando fuori dal modale
+  window.addEventListener('click', (e) => {
+    if (e.target === passwordModal) {
+      passwordModal.style.display = 'none';
+      resetPasswordForm();
+    }
+  });
+
+  // Reset form
+  function resetPasswordForm() {
+    if (changePasswordForm) changePasswordForm.reset();
+    if (passwordMessage) {
+      passwordMessage.textContent = '';
+      passwordMessage.className = 'message';
+    }
+  }
+
+  // Invia form cambio password
+  if (changePasswordForm) {
+    changePasswordForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const newPassword = document.getElementById('new-password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+
+      // Validazione
+      if (newPassword !== confirmPassword) {
+        showMessage('Le password non corrispondono', 'error');
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        showMessage('La password deve essere lunga almeno 6 caratteri', 'error');
+        return;
+      }
+
+      try {
+        // Aggiorna la password
+        const { data, error: updateError } = await db.supabase.auth.updateUser({
+          password: newPassword
+        });
+
+        if (updateError) throw updateError;
+        
+        // Aggiorna la password anche nella tabella users (se necessario)
+        const { error: dbError } = await db.supabase
+          .from('users')
+          .update({ password: newPassword })
+          .eq('id', currentUser.id);
+
+        if (dbError) throw dbError;
+        
+        showMessage('Password aggiornata con successo!', 'success');
+        setTimeout(() => {
+          passwordModal.style.display = 'none';
+          resetPasswordForm();
+        }, 2000);
+        
+      } catch (error) {
+        console.error('Errore durante il cambio password:', error);
+        const errorMessage = error.message || 'Errore durante il cambio password. Riprova più tardi.';
+        showMessage(errorMessage, 'error');
+      }
+    });
+  }
+
+  // Mostra messaggio
+  function showMessage(message, type) {
+    if (!passwordMessage) return;
+    passwordMessage.textContent = message;
+    passwordMessage.className = `message ${type}`;
+  }
+
   // Inizializza
-  updateUserInfo()
-  await loadUserVideos()
+  updateUserInfo();
+  await loadUserVideos();
 })
