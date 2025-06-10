@@ -102,18 +102,37 @@ document.addEventListener("DOMContentLoaded", async () => {
           </a>`
         : ""
 
+      // Mostra sempre il pulsante se c'è una descrizione
+      const hasDescription = description && description.trim() !== '';
+      
+      // Crea il contenuto della card
       artistCard.innerHTML = `
         <div class="artist-header">
           <div class="artist-avatar">${initial}</div>
           <h3 class="artist-name">${artist.name}</h3>
-          ${artist.is_admin ? '<div class="admin-badge"><i class="fas fa-crown"></i> Admin</div>' : ""}
+          ${artist.is_admin ? '<div class="admin-badge"><i class="fas fa-crown"></i> Admin</div>' : ''}
           <div class="artist-stats">${artist.totalVideos} Video</div>
         </div>
         <div class="artist-body">
-          <div class="artist-description">${description}</div>
+          <div class="artist-description">
+            ${description || 'Nessuna descrizione disponibile'}
+          </div>
+          ${hasDescription ? '<button class="show-more-btn">Mostra tutto</button>' : ''}
           ${youtubeButton}
         </div>
-      `
+      `;
+      
+      // Aggiungi gestore eventi per il pulsante "mostra tutto/riduci"
+      if (hasDescription) {
+        const showMoreBtn = artistCard.querySelector('.show-more-btn');
+        const descriptionEl = artistCard.querySelector('.artist-description');
+        
+        showMoreBtn.addEventListener('click', function() {
+          const isExpanded = descriptionEl.classList.toggle('expanded');
+          showMoreBtn.textContent = isExpanded ? 'Riduci' : 'Mostra tutto';
+          showMoreBtn.classList.toggle('expanded', isExpanded);
+        });
+      }
 
       artistsGrid.appendChild(artistCard)
     })
