@@ -1,0 +1,670 @@
+/* ==========================================================================
+   RESET & BASE STYLES
+   ========================================================================== */
+   *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #3b4d2e;      /* Verde oliva scuro */
+    --accent-color: #d4af37;       /* Dettagli dorati */
+    --bg-color: #fcfbf8;           /* Crema / Bianco sporco */
+    --text-color: #2c2925;         /* Colore testo scuro per contrasto */
+    --wa-color: #25d366;           /* WhatsApp */
+    --wa-color-hover: #20b858;
+    
+    --font-heading: 'Cormorant Garamond', serif;
+    --font-body: 'Inter', sans-serif;
+    
+    --header-height: 80px;
+    --transition-s: 0.3s ease;
+    --transition-m: 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+html {
+    scroll-behavior: smooth; /* Even though we use JS for offset, this is good fallback */
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* ==========================================================================
+   TYPOGRAPHY
+   ========================================================================== */
+h1, h2, h3, h4, h5, h6, .logo, .eyebrow, .footer-brand {
+    font-family: var(--font-heading);
+    font-weight: 500;
+}
+
+.eyebrow {
+    display: block;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+    line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+    .section-title {
+        font-size: 3.5rem;
+    }
+}
+
+.text-body {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: rgba(44, 41, 37, 0.85);
+}
+
+/* ==========================================================================
+   LOADER
+   ========================================================================== */
+#loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(59, 77, 46, 0.2);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   HEADER & NAVIGATION
+   ========================================================================== */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--header-height);
+    background-color: var(--bg-color); /* Sempre solido per non accavallarsi ai testi della hero boxed */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    z-index: 1000;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 2rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 1rem;
+    font-weight: 500;
+    transition: color var(--transition-s);
+}
+
+.nav-link:hover {
+    color: var(--accent-color);
+}
+
+.btn-nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--wa-color);
+    color: #fff !important;
+    padding: 0.5rem 1.2rem;
+    border-radius: 50px;
+    text-shadow: none;
+    transition: background-color var(--transition-s), transform var(--transition-s);
+}
+
+.btn-nav:hover {
+    background-color: var(--wa-color-hover);
+    transform: translateY(-2px);
+    color: #fff !important;
+}
+
+/* Hamburger Menu */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 20px;
+    cursor: pointer;
+    z-index: 1001; /* Above mobile menu overlay */
+}
+
+.menu-toggle .bar {
+    height: 2px;
+    width: 100%;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+    transition: all var(--transition-s);
+}
+
+/* Hamburger Animation */
+.menu-toggle.active .bar:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+}
+.menu-toggle.active .bar:nth-child(2) {
+    opacity: 0;
+}
+.menu-toggle.active .bar:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+/* ==========================================================================
+   HERO & VIDEO SECTION BOXED
+   ========================================================================== */
+.hero-boxed {
+    padding-top: calc(var(--header-height) + 4rem); 
+    padding-bottom: 4rem;
+}
+
+.hero-title-dark {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-style: italic;
+    line-height: 1.1;
+    color: var(--primary-color);
+    font-family: var(--font-heading);
+}
+
+.hero-title-dark span {
+    font-size: 3.5rem;
+    color: var(--accent-color);
+    display: block;
+}
+
+@media (min-width: 768px) {
+    .hero-title-dark { font-size: 4rem; }
+    .hero-title-dark span { font-size: 4.5rem; }
+}
+
+.hero-subtitle-dark {
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+    font-weight: 300;
+    color: var(--text-color);
+}
+
+@media (min-width: 768px) {
+    .hero-subtitle-dark { font-size: 1.5rem; }
+}
+
+.video-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    background-color: transparent; /* Changed from black */
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.audio-toggle-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all var(--transition-s);
+    z-index: 10;
+    backdrop-filter: blur(5px);
+}
+
+.audio-toggle-btn:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    border-color: rgba(255,255,255,0.8);
+}
+
+.audio-toggle-btn i {
+    font-size: 1.1rem;
+}
+
+.video-large {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 80vh; /* Impedisce che un video verticale occupi più di una schermata desktop */
+    display: block;
+    margin: 0 auto;
+    border-radius: 12px;
+}
+
+/* ==========================================================================
+   SECTIONS GENERAL
+   ========================================================================== */
+.section {
+    padding: 6rem 2rem;
+    background-color: var(--bg-color);
+    scroll-margin-top: var(--header-height);
+}
+
+.section-light {
+    background-color: #fff;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   STORIA / CHI SIAMO
+   ========================================================================== */
+.two-columns {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4rem;
+}
+
+@media (min-width: 992px) {
+    .two-columns {
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+    }
+}
+
+.custom-quote {
+    position: relative;
+    padding: 2rem 2rem 2rem 3.5rem;
+    background-color: rgba(212, 175, 55, 0.05);
+    border-left: 4px solid var(--accent-color);
+    margin: 1.5rem 0;
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-style: italic;
+    color: var(--primary-color);
+}
+
+.quote-icon {
+    position: absolute;
+    top: 1.5rem;
+    left: 1rem;
+    font-size: 3rem;
+    color: rgba(212, 175, 55, 0.15);
+    z-index: 0;
+}
+
+.custom-quote p {
+    position: relative;
+    z-index: 1;
+}
+
+.custom-quote cite {
+    display: block;
+    margin-top: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    font-style: normal;
+    color: var(--accent-color);
+    font-family: var(--font-body);
+}
+
+.features-column {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.feature-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    transition: transform var(--transition-s), box-shadow var(--transition-s);
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+}
+
+.feature-icon {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    background-color: rgba(59, 77, 46, 0.1);
+    color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+}
+
+.feature-text h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
+}
+
+.feature-text p {
+    color: rgba(44, 41, 37, 0.7);
+    font-size: 0.95rem;
+}
+
+
+/* ==========================================================================
+   CONTATTI / CTA
+   ========================================================================== */
+.cta-section {
+    padding: 6rem 1.5rem;
+    background-color: var(--primary-color);
+    color: #fff;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    scroll-margin-top: var(--header-height);
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.cta-container {
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.cta-title {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    color: #fff;
+}
+
+@media (min-width: 768px) {
+    .cta-title {
+        font-size: 3rem;
+    }
+}
+
+.cta-description {
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+    opacity: 0.9;
+}
+
+.cta-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .cta-actions {
+        flex-direction: row;
+        justify-content: center;
+    }
+}
+
+.btn-whatsapp-large {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--wa-color);
+    color: #fff;
+    padding: 1.2rem 2.5rem;
+    font-size: 1.2rem;
+    font-weight: 500;
+    border-radius: 50px;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3);
+    transition: all var(--transition-s);
+}
+
+.btn-whatsapp-large i {
+    font-size: 1.8rem;
+}
+
+.btn-whatsapp-large:hover {
+    background-color: var(--wa-color-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(37, 211, 102, 0.4);
+}
+
+.phone-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50px;
+    transition: all var(--transition-s);
+}
+
+.phone-link:hover {
+    background-color: rgba(255,255,255,0.1);
+    border-color: #fff;
+    transform: translateY(-3px);
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+footer {
+    background-color: #212c1a; /* Verde scurissimo quasi nero */
+    color: rgba(255,255,255,0.7);
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.footer-brand {
+    font-size: 1.8rem;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+.copyright {
+    font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   FLOATING WHATSAPP BUTTON
+   ========================================================================== */
+.floating-whatsapp {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: var(--wa-color);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
+    z-index: 1000;
+    text-decoration: none;
+    transition: transform var(--transition-s);
+}
+
+.floating-whatsapp:hover {
+    transform: scale(1.1);
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 140px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    right: 120%; 
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent transparent #333;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* ==========================================================================
+   MOBILE MENU OVERLAY
+   ========================================================================== */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: flex;
+    }
+
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        height: 100vh;
+        background-color: var(--bg-color);
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding-left: 3rem;
+        gap: 2.5rem;
+        transition: right var(--transition-m);
+        box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+        z-index: 1000;
+    }
+
+    .nav-links.active {
+        right: 0;
+    }
+
+    .nav-link {
+        color: var(--text-color);
+        font-size: 1.5rem;
+        text-shadow: none;
+    }
+}
+
+/* ==========================================================================
+   ANIMATIONS (REVEAL SCRIPT)
+   ========================================================================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reveal-left {
+    transform: translateX(-50px);
+}
+.reveal-left.active {
+    transform: translateX(0);
+}
+
+.reveal-right {
+    transform: translateX(50px);
+}
+.reveal-right.active {
+    transform: translateX(0);
+}

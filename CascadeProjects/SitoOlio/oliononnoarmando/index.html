@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olio Nonno Armando | Extra Vergine di Oliva Artigianale e Naturale</title>
+    
+    <!-- Meta description for SEO -->
+    <meta name="description" content="Olio Nonno Armando: olio extra vergine di oliva artigianale e premium, 100% naturale. Scopri la trazione, il rispetto per la natura e l'eccellenza della Famiglia.">
+    
+    <!-- Google Fonts: Cormorant Garamond & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Loader -->
+    <div id="loader">
+        <div class="spinner"></div>
+    </div>
+
+        <!-- Header / Navigazione -->
+    <header id="navbar">
+        <div class="nav-container">
+            <a href="#home" class="logo">Olio Nonno Armando</a>
+            <div class="menu-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#home" class="nav-link">Home</a></li>
+                    <li><a href="#storia" class="nav-link">Chi Siamo</a></li>
+                    <li><a href="#video-secondario" class="nav-link">Il Raccolto</a></li>
+                    <li><a href="#contatti" class="nav-link btn-nav"><i class="fa-brands fa-whatsapp"></i> Contattaci</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="section hero-boxed">
+            <div class="container text-center">
+                <h1 class="hero-title-dark">🌿 Olio<br><span>Nonno Armando</span> 🫒</h1>
+                <p class="hero-subtitle-dark">✨ Tradizione e Natura racchiuse in ogni singola goccia.</p>
+                <div class="video-container reveal">
+                    <button class="audio-toggle-btn" aria-label="Attiva Audio" data-video-target="heroVideo">
+                        <i class="fa-solid fa-volume-xmark"></i> Audio
+                    </button>
+                    <video id="heroVideo" autoplay loop muted playsinline class="video-large">
+                        <source src="https://res.cloudinary.com/dtao2wba5/video/upload/v1773505152/1773504993231258_zj6efv.mov" type="video/mp4">
+                        Il tuo browser non supporta i video HTML5.
+                    </video>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chi Siamo / Storia Section -->
+        <section id="storia" class="section">
+            <div class="container two-columns">
+                
+                <!-- Colonna Testo -->
+                <div class="text-column reveal reveal-left">
+                    <span class="eyebrow">📖 La Nostra Storia</span>
+                    <h2 class="section-title">Lavoriamo come fa la natura 🌱</h2>
+                    
+                    <p class="text-body">
+                        Concependo un olio extra vergine di oliva dalle proprietà organolettiche uniche, completamente naturale.
+                    </p>
+                    
+                    <p class="text-body">
+                        Fin da bambino mi hanno portato in quella terra, che è stata di mio Nonno Armando e ancora prima del mio bisnonno. Lì ho imparato l'importanza di saper riconoscere e rispettare un prodotto della natura.
+                    </p>
+
+                    <blockquote class="custom-quote">
+                        <i class="fa-solid fa-quote-left quote-icon"></i>
+                        <p>"Questo è olio vero" è ciò che diceva mia madre quando preparava il pane con l'olio appena spremuto dal frantoio e l'origano. Mi sembrava una stupidaggine, come se ci potesse essere un olio finto, oggi capisco che aveva ragione.</p>
+                        <cite>— La Famiglia</cite>
+                    </blockquote>
+
+                    <p class="text-body">
+                        Le olive vengono raccolte rispettando il terreno e portate nel frantoio del paese il giorno stesso, dove la molitura viene fatta a freddo con le macine in pietra.
+                    </p>
+                </div>
+
+                <!-- Colonna Features -->
+                <div class="features-column reveal reveal-right">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fa-solid fa-leaf"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h3>100% Naturale 🍃</h3>
+                            <p>Senza l'uso di agenti chimici, preservando la purezza della terra.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fa-solid fa-hand-holding-hand"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h3>Raccolta Manuale 🤲</h3>
+                            <p>Rispettiamo ogni singola oliva, garantendo la massima cura della pianta.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fa-solid fa-temperature-arrow-down"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h3>Spremitura a Freddo ❄️</h3>
+                            <p>Molitura artigianale con macine in pietra per esaltare il sapore e i profumi.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Sezione Video Secondario -->
+        <section id="video-secondario" class="section section-light">
+            <div class="container text-center reveal">
+                <span class="eyebrow">Il Nostro Lavoro</span>
+                <h2 class="section-title">L'Eccellenza sul Campo</h2>
+                <div class="video-container">
+                    <button class="audio-toggle-btn" aria-label="Attiva Audio" data-video-target="secondaryVideo">
+                        <i class="fa-solid fa-volume-xmark"></i> Audio
+                    </button>
+                    <video id="secondaryVideo" autoplay loop muted playsinline class="video-large">
+                        <source src="https://res.cloudinary.com/dtao2wba5/video/upload/v1773504689/WhatsApp_Video_2026-03-12_at_21.01.50_2_vgzuh8.mp4" type="video/mp4">
+                        Il tuo browser non supporta i video HTML5.
+                    </video>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sezione Contatti / Call to Action -->
+        <section id="contatti" class="cta-section">
+            <div class="cta-container reveal">
+                <h2 class="cta-title">Assapora l'Autenticità 🥖</h2>
+                <p class="cta-description">Porta in tavola l'essenza della natura. Contattaci direttamente per avere maggiori informazioni e prenotare la tua bottiglia di <strong>Olio Nonno Armando</strong> 🚚.</p>
+                <div class="cta-actions">
+                    <a href="https://wa.me/393514470333" target="_blank" class="btn btn-whatsapp-large">
+                        <i class="fa-brands fa-whatsapp"></i> Scrivici su WhatsApp
+                    </a>
+                    <a href="tel:+393514470333" class="phone-link">
+                        <i class="fa-solid fa-phone"></i> +39 351 447 0333
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <p class="footer-brand">Olio Nonno Armando</p>
+            <p class="copyright">&copy; 2026 Tutti i diritti riservati. Fatto a mano con passione.</p>
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/393514470333" target="_blank" class="floating-whatsapp tooltip" aria-label="Contattaci su WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span class="tooltiptext">Scrivici subito!</span>
+    </a>
+
+    <!-- Custom Script -->
+    <script src="script.js"></script>
+</body>
+</html>
